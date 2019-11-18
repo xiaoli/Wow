@@ -27,6 +27,17 @@ namespace AntiAFK
 
         private const int WM_KEYDOWN = 0x0100;
 
+        private static bool keyWPressed;
+
+        private static bool ControlAltPressed
+        {
+            get
+            {
+                Keys mods = Keys.Control | Keys.Alt; //需要Ctrl和Alt同时按键
+                return (System.Windows.Forms.Control.ModifierKeys & mods) == mods;
+            }
+        }
+
         private static LowLevelKeyboardProc _proc = HookCallback;
 
         private static IntPtr _hookID = IntPtr.Zero;
@@ -49,8 +60,16 @@ namespace AntiAFK
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
-                int vkCode = Marshal.ReadInt32(lParam);
-                Console.WriteLine((Keys)vkCode);
+                Keys key = (Keys)Marshal.ReadInt32(lParam);
+                if (key == Keys.D9 && ControlAltPressed)
+                {
+                    keyWPressed = true;
+                }
+                else
+                {
+                    keyWPressed = false;
+                }
+                if (keyWPressed) Console.WriteLine("haha, got that");
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
