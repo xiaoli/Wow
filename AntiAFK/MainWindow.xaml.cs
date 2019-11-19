@@ -29,20 +29,6 @@ namespace AntiAFK
         private string ptrValue = String.Empty;
         private string nameValue = String.Empty;
 
-        // The constructor is private to enforce the factory pattern.  
-        public MyWowItem()
-        {
-            idValue = "";
-            ptrValue = "";
-            nameValue = "";
-        }
-
-        // This is the public factory method.  
-        public static MyWowItem CreateNewMyWowItem()
-        {
-            return new MyWowItem();
-        }
-
         public string Id {
             get
             {
@@ -151,7 +137,6 @@ namespace AntiAFK
                         if (Buff.ToString() == "魔兽世界")
                         {
                             mWindows.Add(handle);  // 把窗口handle加入List
-                            Console.WriteLine("haha, got that");
                         }
                     }
                 }
@@ -162,38 +147,39 @@ namespace AntiAFK
         private TrulyObservableCollection<MyWowItem> _mWowWindowList = new TrulyObservableCollection<MyWowItem>();
         public TrulyObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
 
+        void AvoidOfflice(IntPtr winHandle)
+        {
+            //KeyPress(handle, Keys.OemQuestion, 500);
+            //KeyPress(handle, Keys.D, 500);
+            //KeyPress(handle, Keys.A, 500);
+            //KeyPress(handle, Keys.N, 500);
+            //KeyPress(handle, Keys.C, 500);
+            //KeyPress(handle, Keys.E, 500);
+
+            SetForegroundWindow(winHandle);
+
+            System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
+            SendKeys.SendWait("~");
+            SendKeys.SendWait("^v");
+            SendKeys.SendWait("~");
+            SendKeys.Flush();
+
+            System.Threading.Thread.Sleep(30000); // 暂停30秒钟
+
+            SetForegroundWindow(winHandle);
+            SendKeys.SendWait("{Enter}");
+            SendKeys.Flush();
+            
+            //SendMessage(handle, 0x000C, 0, "/dance");
+        }
+
         void AntiAFKTimer(object sender, EventArgs e)
         {
             foreach (IntPtr winHandle in mWindows)
             {
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
-                    Console.WriteLine("ok, do that 111");
-                    
-                    //KeyPress(handle, Keys.OemQuestion, 500);
-                    //KeyPress(handle, Keys.D, 500);
-                    //KeyPress(handle, Keys.A, 500);
-                    //KeyPress(handle, Keys.N, 500);
-                    //KeyPress(handle, Keys.C, 500);
-                    //KeyPress(handle, Keys.E, 500);
-
-                    SetForegroundWindow(winHandle);
-
-                    System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
-                    SendKeys.SendWait("~");
-                    SendKeys.SendWait("^v");
-                    SendKeys.SendWait("~");
-                    SendKeys.Flush();
-
-                    Console.WriteLine("ok, logout that");
-
-                    System.Threading.Thread.Sleep(30000); // 暂停30秒钟
-                    SendKeys.SendWait("{Enter}");
-                    SendKeys.Flush();
-
-                    Console.WriteLine("ok, login again");
-
-                    //SendMessage(handle, 0x000C, 0, "/dance");
+                    AvoidOfflice(winHandle);
                 }
             }
         }
@@ -208,13 +194,14 @@ namespace AntiAFK
                     var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
                     if (found.Count() == 0)
                     {
-                        GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                       //mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-
+                        //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
+                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
 
                         //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
                         //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
-                        Console.WriteLine("ok, add");
+
+                        // 立即执行一次操作
+                        AvoidOfflice(winHandle);
                     }
                     
                 }
@@ -225,14 +212,11 @@ namespace AntiAFK
                     var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
                     if (found.Count() > 0)
                     {
-                        System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single())));
+                        mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
                     }
-                    Console.WriteLine("ok, remove");
                     mWindows.Remove(winHandle);
                 }
             }
-
-            GameListView.Items.Refresh();
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -294,7 +278,7 @@ namespace AntiAFK
             t.Start();*/
 
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次
+            timer.Interval = TimeSpan.FromSeconds(1); // 1秒执行一次
             timer.Tick += UpdateUITimer;
             timer.Start();
 
@@ -302,6 +286,8 @@ namespace AntiAFK
             afkTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
             afkTimer.Tick += AntiAFKTimer;
             afkTimer.Start();
+
+            DataContext = mWowWindowList;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

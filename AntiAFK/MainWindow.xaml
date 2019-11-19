@@ -12,7 +12,7 @@
             <ColumnDefinition Width="199*"/>
             <ColumnDefinition Width="197*"/>
         </Grid.ColumnDefinitions>
-        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding mWowWindowList}" HorizontalAlignment="Left" Height="127" Margin="17,30,0,0" VerticalAlignment="Top" Width="357" Grid.ColumnSpan="2">
+        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="132" Margin="3,34,7,0" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}"/>
