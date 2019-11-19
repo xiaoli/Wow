@@ -15,9 +15,88 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Collections.ObjectModel;
+using System.Windows.Threading;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace AntiAFK
 {
+    public class MyWowItem : INotifyPropertyChanged
+    {
+        // These fields hold the values for the public properties.  
+        private string idValue = String.Empty;
+        private string ptrValue = String.Empty;
+        private string nameValue = String.Empty;
+
+        // The constructor is private to enforce the factory pattern.  
+        public MyWowItem()
+        {
+            idValue = "";
+            ptrValue = "";
+            nameValue = "";
+        }
+
+        // This is the public factory method.  
+        public static MyWowItem CreateNewMyWowItem()
+        {
+            return new MyWowItem();
+        }
+
+        public string Id {
+            get
+            {
+                return this.idValue;
+            }
+            set
+            {
+                if (value != this.idValue)
+                {
+                    this.idValue = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public string Ptr {
+            get
+            {
+                return this.ptrValue;
+            }
+            set
+            {
+                if (value != this.ptrValue)
+                {
+                    this.ptrValue = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public string Name {
+            get
+            {
+                return this.nameValue;
+            }
+            set
+            {
+                if (value != this.nameValue)
+                {
+                    this.nameValue = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // This method is called by the Set accessor of each property.  
+        // The CallerMemberName attribute that is applied to the optional propertyName  
+        // parameter causes the property name of the caller to be substituted as an argument.  
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
@@ -27,7 +106,7 @@ namespace AntiAFK
 
         private const int WM_KEYDOWN = 0x0100;
 
-        private static bool keyWPressed;
+        private static List<IntPtr> mWindows;
 
         private static bool ControlAltPressed
         {
@@ -37,6 +116,7 @@ namespace AntiAFK
                 return (System.Windows.Forms.Control.ModifierKeys & mods) == mods;
             }
         }
+        private const int nChars = 256;
 
         private static LowLevelKeyboardProc _proc = HookCallback;
 
@@ -63,15 +143,96 @@ namespace AntiAFK
                 Keys key = (Keys)Marshal.ReadInt32(lParam);
                 if (key == Keys.D9 && ControlAltPressed)
                 {
-                    keyWPressed = true;
+                    StringBuilder Buff = new StringBuilder(nChars);
+                    IntPtr handle = GetForegroundWindow();
+
+                    if (GetWindowText(handle, Buff, nChars) > 0)
+                    {
+                        if (Buff.ToString() == "魔兽世界")
+                        {
+                            mWindows.Add(handle);  // 把窗口handle加入List
+                            Console.WriteLine("haha, got that");
+                        }
+                    }
                 }
-                else
-                {
-                    keyWPressed = false;
-                }
-                if (keyWPressed) Console.WriteLine("haha, got that");
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        }
+
+        private TrulyObservableCollection<MyWowItem> _mWowWindowList = new TrulyObservableCollection<MyWowItem>();
+        public TrulyObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
+
+        void AntiAFKTimer(object sender, EventArgs e)
+        {
+            foreach (IntPtr winHandle in mWindows)
+            {
+                if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                {
+                    Console.WriteLine("ok, do that 111");
+                    
+                    //KeyPress(handle, Keys.OemQuestion, 500);
+                    //KeyPress(handle, Keys.D, 500);
+                    //KeyPress(handle, Keys.A, 500);
+                    //KeyPress(handle, Keys.N, 500);
+                    //KeyPress(handle, Keys.C, 500);
+                    //KeyPress(handle, Keys.E, 500);
+
+                    SetForegroundWindow(winHandle);
+
+                    System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
+                    SendKeys.SendWait("~");
+                    SendKeys.SendWait("^v");
+                    SendKeys.SendWait("~");
+                    SendKeys.Flush();
+
+                    Console.WriteLine("ok, logout that");
+
+                    System.Threading.Thread.Sleep(30000); // 暂停30秒钟
+                    SendKeys.SendWait("{Enter}");
+                    SendKeys.Flush();
+
+                    Console.WriteLine("ok, login again");
+
+                    //SendMessage(handle, 0x000C, 0, "/dance");
+                }
+            }
+        }
+
+        void UpdateUITimer(object sender, EventArgs e)
+        {
+            foreach (IntPtr winHandle in mWindows)
+            {
+                if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                {
+                    // 查找，如果没有显示出来，则添加至界面显示
+                    var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
+                    if (found.Count() == 0)
+                    {
+                        GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
+                       //mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
+
+
+                        //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
+                        //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
+                        Console.WriteLine("ok, add");
+                    }
+                    
+                }
+                else // 否则，删除掉已经关闭/无效的窗口
+                {
+                    //GameListView.Items.Remove(found);
+                    //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
+                    var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
+                    if (found.Count() > 0)
+                    {
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single())));
+                    }
+                    Console.WriteLine("ok, remove");
+                    mWindows.Remove(winHandle);
+                }
+            }
+
+            GameListView.Items.Refresh();
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -86,15 +247,61 @@ namespace AntiAFK
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
             IntPtr wParam, IntPtr lParam);
 
-
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+
+        [DllImport("User32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, string lParam);
+
+        [DllImport("user32.dll")]
+        static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, uint lParam);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool IsWindow(IntPtr hWnd);
+
+        public static void KeyPress(IntPtr windowHwnd, Keys key, int sleep = 100)
+        {
+            const int WM_KEYDOWN = 0x100;
+            const int WM_KEYUP = 0x101;
+
+            PostMessage(windowHwnd, WM_KEYDOWN, (int)key, 0x001F0001);
+            System.Threading.Thread.Sleep(sleep);
+            PostMessage(windowHwnd, WM_KEYUP, (int)key, 0xC01F0001);
+        }
 
         public MainWindow()
         {
             InitializeComponent();
 
+            mWindows = new List<IntPtr>();
+
             _hookID = SetHook(_proc);
+
+            /*System.Timers.Timer t = new System.Timers.Timer();
+            t.Interval = 5000; // In milliseconds
+            t.AutoReset = true; // Stops it from repeating
+            t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
+            t.Start();*/
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次
+            timer.Tick += UpdateUITimer;
+            timer.Start();
+
+            DispatcherTimer afkTimer = new DispatcherTimer();
+            afkTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
+            afkTimer.Tick += AntiAFKTimer;
+            afkTimer.Start();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
