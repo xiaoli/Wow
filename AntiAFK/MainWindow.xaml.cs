@@ -19,6 +19,9 @@ using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.IO;
+using System.Management;  // <=== Add Reference required!!
+using Keyboard;
 
 namespace AntiAFK
 {
@@ -28,6 +31,7 @@ namespace AntiAFK
         private string idValue = String.Empty;
         private string ptrValue = String.Empty;
         private string nameValue = String.Empty;
+        private string statusValue = String.Empty;
 
         public string Id {
             get
@@ -72,6 +76,22 @@ namespace AntiAFK
             }
         }
 
+        public string Status
+        {
+            get
+            {
+                return this.statusValue;
+            }
+            set
+            {
+                if (value != this.statusValue)
+                {
+                    this.statusValue = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         // This method is called by the Set accessor of each property.  
@@ -108,6 +128,7 @@ namespace AntiAFK
 
         private static IntPtr _hookID = IntPtr.Zero;
 
+        [VMProtect.BeginMutation]
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
@@ -121,6 +142,7 @@ namespace AntiAFK
         private delegate IntPtr LowLevelKeyboardProc(
             int nCode, IntPtr wParam, IntPtr lParam);
 
+        [VMProtect.BeginMutation]
         private static IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -134,20 +156,27 @@ namespace AntiAFK
 
                     if (GetWindowText(handle, Buff, nChars) > 0)
                     {
+                        Console.WriteLine(Buff.ToString());
                         if (Buff.ToString() == "魔兽世界")
                         {
                             mWindows.Add(handle);  // 把窗口handle加入List
                         }
                     }
+
+                    Console.WriteLine("获取到游戏窗口");
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
-        private TrulyObservableCollection<MyWowItem> _mWowWindowList = new TrulyObservableCollection<MyWowItem>();
-        public TrulyObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
+        //private TrulyObservableCollection<MyWowItem> _mWowWindowList = new TrulyObservableCollection<MyWowItem>();
+        //public TrulyObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
 
-        void AvoidOfflice(IntPtr winHandle)
+        private ObservableCollection<MyWowItem> _mWowWindowList = new ObservableCollection<MyWowItem>();
+        public ObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
+
+        [VMProtect.BeginMutation]
+        async Task AvoidOffline(IntPtr winHandle)
         {
             //KeyPress(handle, Keys.OemQuestion, 500);
             //KeyPress(handle, Keys.D, 500);
@@ -156,35 +185,46 @@ namespace AntiAFK
             //KeyPress(handle, Keys.C, 500);
             //KeyPress(handle, Keys.E, 500);
 
-            SetForegroundWindow(winHandle);
+            //SetForegroundWindow(winHandle);
 
-            System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
+            /*System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
             SendKeys.SendWait("~");
             SendKeys.SendWait("^v");
-            SendKeys.SendWait("~");
-            SendKeys.Flush();
+            SendKeys.SendWait("~");*/
+            //System.Threading.Thread.Sleep(500); // 暂停半秒钟
+            //SendKeys.SendWait("{Enter}");
+            //SendKeys.Flush();
 
-            System.Threading.Thread.Sleep(30000); // 暂停30秒钟
+            var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+            x.Status = "正在小退中";
+            string message = "/logout";
+            Keyboard.Messaging.SendChatTextSend(winHandle, message);
+            
+            await Task.Delay(30000); // 推迟30秒执行
+            x.Status = "正在登录中";
+            Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
 
-            SetForegroundWindow(winHandle);
+            // 以下方法不靠谱，因为任何一个窗口的激活，都会导致游戏窗口不在Foreground状态中，从而无法发送键盘输入
+            /*SetForegroundWindow(winHandle);
             SendKeys.SendWait("{Enter}");
             SendKeys.Flush();
-            
-            //SendMessage(handle, 0x000C, 0, "/dance");
+            Console.WriteLine("SEND KEYS TO ENTER");*/
         }
 
-        void AntiAFKTimer(object sender, EventArgs e)
+        [VMProtect.BeginMutation]
+        async void AntiAFKTimer(object sender, EventArgs e)
         {
             foreach (IntPtr winHandle in mWindows)
             {
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
-                    AvoidOfflice(winHandle);
+                    await AvoidOffline(winHandle);
                 }
             }
         }
 
-        void UpdateUITimer(object sender, EventArgs e)
+        [VMProtect.BeginMutation]
+        async void UpdateUITimer(object sender, EventArgs e)
         {
             foreach (IntPtr winHandle in mWindows)
             {
@@ -195,15 +235,14 @@ namespace AntiAFK
                     if (found.Count() == 0)
                     {
                         //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
+                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界", Status = "准备好了" });
 
                         //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
                         //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
 
                         // 立即执行一次操作
-                        AvoidOfflice(winHandle);
+                        await AvoidOffline(winHandle);
                     }
-                    
                 }
                 else // 否则，删除掉已经关闭/无效的窗口
                 {
@@ -212,9 +251,11 @@ namespace AntiAFK
                     var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
                     if (found.Count() > 0)
                     {
-                        mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
+                        //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
+                        var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+                        x.Status = "游戏窗口已经关闭";
                     }
-                    mWindows.Remove(winHandle);
+                    //mWindows.Remove(winHandle);
                 }
             }
         }
