@@ -214,8 +214,9 @@ namespace AntiAFK
         [VMProtect.BeginMutation]
         async void AntiAFKTimer(object sender, EventArgs e)
         {
-            foreach (IntPtr winHandle in mWindows)
+            for (int i = 0; i < mWindows.Count(); i++)
             {
+                IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
                     await AvoidOffline(winHandle);
@@ -226,8 +227,9 @@ namespace AntiAFK
         [VMProtect.BeginMutation]
         async void UpdateUITimer(object sender, EventArgs e)
         {
-            foreach (IntPtr winHandle in mWindows)
+            for (int i=0; i<mWindows.Count(); i++)
             {
+                IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
                     // 查找，如果没有显示出来，则添加至界面显示
@@ -319,7 +321,7 @@ namespace AntiAFK
             t.Start();*/
 
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1); // 1秒执行一次
+            timer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
             timer.Tick += UpdateUITimer;
             timer.Start();
 
