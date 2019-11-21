@@ -115,6 +115,10 @@ namespace AntiAFK
 
         private static List<IntPtr> mWindows;
 
+        private static int mLogoutInterval = 5;
+        DispatcherTimer mUITimer = new DispatcherTimer();
+        DispatcherTimer mAFKTimer = new DispatcherTimer();
+
         private static bool ControlAltPressed
         {
             get
@@ -214,8 +218,9 @@ namespace AntiAFK
         }
 
         [VMProtect.Begin]
-        async void AntiAFKTimer(object sender, EventArgs e)
+        async void AntiAFKTimerFunc(object sender, EventArgs e)
         {
+            Console.WriteLine("======AntiAFKTimerFunc=======");
             for (int i = 0; i < mWindows.Count(); i++)
             {
                 IntPtr winHandle = mWindows[i];
@@ -227,7 +232,7 @@ namespace AntiAFK
         }
 
         [VMProtect.Begin]
-        async void UpdateUITimer(object sender, EventArgs e)
+        async void UpdateUITimerFunc(object sender, EventArgs e)
         {
             for (int i=0; i<mWindows.Count(); i++)
             {
@@ -239,7 +244,7 @@ namespace AntiAFK
                     if (found.Count() == 0)
                     {
                         //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界", Status = "准备好了" });
+                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界怀旧服", Status = "准备好了" });
 
                         //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
                         //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
@@ -321,16 +326,14 @@ namespace AntiAFK
             t.AutoReset = true; // Stops it from repeating
             t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
             t.Start();*/
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
-            timer.Tick += UpdateUITimer;
-            timer.Start();
-
-            DispatcherTimer afkTimer = new DispatcherTimer();
-            afkTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
-            afkTimer.Tick += AntiAFKTimer;
-            afkTimer.Start();
+            
+            mUITimer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
+            mUITimer.Tick += UpdateUITimerFunc;
+            mUITimer.Start();
+            
+            mAFKTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
+            mAFKTimer.Tick += AntiAFKTimerFunc;
+            mAFKTimer.Start();
 
             DataContext = mWowWindowList;
         }
@@ -462,6 +465,12 @@ namespace AntiAFK
             {
                 ExpireDateTime.Content = "激活失败，原因未知，请联系作者";
             }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
+            mAFKTimer.Interval = TimeSpan.FromSeconds(10 * mLogoutInterval);
         }
     }
 }
