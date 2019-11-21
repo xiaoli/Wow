@@ -23,9 +23,10 @@
             </ListView.View>
         </ListView>
         <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,-35,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259"/>
-        <Label Content="有效日期：" HorizontalAlignment="Left" Margin="5,211,0,-36" VerticalAlignment="Top" Width="70" Grid.ColumnSpan="2"/>
-        <Label Content="无" HorizontalAlignment="Left" Margin="75,211,0,-36" VerticalAlignment="Top" Width="124"/>
-        <Button Content="密钥" Grid.Column="2" HorizontalAlignment="Left" Margin="95,213,0,-32" VerticalAlignment="Top" Width="77"/>
+        <Label Content="有效日期：" HorizontalAlignment="Left" Margin="5,211,0,-36" VerticalAlignment="Top" Width="70" Grid.ColumnSpan="2" Visibility="Hidden"/>
+        <Label x:Name="ExpireDateTime" Content="无" HorizontalAlignment="Left" Margin="13,211,0,-36" VerticalAlignment="Top" Width="223" Grid.ColumnSpan="2" Grid.Column="1" Visibility="Hidden"/>
+        <Button Content="密钥" Grid.Column="2" HorizontalAlignment="Left" Margin="95,213,0,-32" VerticalAlignment="Top" Width="77" Click="Button_Click" Visibility="Hidden"/>
+        <Label Content="作者：不想写代码@比格沃斯-部落工会[黑名单]" HorizontalAlignment="Left" Margin="5,211,0,-36" VerticalAlignment="Top" Width="300" Grid.ColumnSpan="3" />
 
     </Grid>
 </Window>

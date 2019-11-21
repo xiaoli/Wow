@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System.Management;  // <=== Add Reference required!!
 using Keyboard;
+using VMProtect;
 
 namespace AntiAFK
 {
@@ -128,7 +129,7 @@ namespace AntiAFK
 
         private static IntPtr _hookID = IntPtr.Zero;
 
-        [VMProtect.BeginMutation]
+        [VMProtect.Begin]
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
@@ -142,7 +143,7 @@ namespace AntiAFK
         private delegate IntPtr LowLevelKeyboardProc(
             int nCode, IntPtr wParam, IntPtr lParam);
 
-        [VMProtect.BeginMutation]
+        [VMProtect.Begin]
         private static IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -163,7 +164,7 @@ namespace AntiAFK
                         }
                     }
 
-                    Console.WriteLine("获取到游戏窗口");
+                    //Console.WriteLine("获取到游戏窗口");
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
@@ -175,7 +176,7 @@ namespace AntiAFK
         private ObservableCollection<MyWowItem> _mWowWindowList = new ObservableCollection<MyWowItem>();
         public ObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
 
-        [VMProtect.BeginMutation]
+        [VMProtect.Begin]
         async Task AvoidOffline(IntPtr winHandle)
         {
             //KeyPress(handle, Keys.OemQuestion, 500);
@@ -201,6 +202,7 @@ namespace AntiAFK
             Keyboard.Messaging.SendChatTextSend(winHandle, message);
             
             await Task.Delay(30000); // 推迟30秒执行
+            //x.Status = VMProtect.SDK.DecryptString("正在登录中");
             x.Status = "正在登录中";
             Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
 
@@ -211,7 +213,7 @@ namespace AntiAFK
             Console.WriteLine("SEND KEYS TO ENTER");*/
         }
 
-        [VMProtect.BeginMutation]
+        [VMProtect.Begin]
         async void AntiAFKTimer(object sender, EventArgs e)
         {
             for (int i = 0; i < mWindows.Count(); i++)
@@ -224,7 +226,7 @@ namespace AntiAFK
             }
         }
 
-        [VMProtect.BeginMutation]
+        [VMProtect.Begin]
         async void UpdateUITimer(object sender, EventArgs e)
         {
             for (int i=0; i<mWindows.Count(); i++)
@@ -333,6 +335,38 @@ namespace AntiAFK
             DataContext = mWowWindowList;
         }
 
+        private void CheckSerialNumber()
+        {
+            var fileName = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "\\sn.txt");
+
+            string sn_content = File.ReadAllText(fileName);
+
+            //VMProtect.SDK.ActivateLicense(sn_content);
+
+            /*var status = VMProtect.SDK.SetSerialNumber(path);
+            txtResult.Clear();
+            AppendResultLine("VMProtectSetSerialNumber() returned: {0}", status);
+            AppendResultLine("");
+
+            var status2 = VMProtect.SDK.GetSerialNumberState();
+            AppendResultLine("VMProtectGetSerialNumberState() returned: {0}", status2);
+            AppendResultLine("");
+
+            VMProtect.SerialNumberData sd;
+            var res = VMProtect.SDK.GetSerialNumberData(out sd);
+            AppendResultLine("VMProtectGetSerialNumberData() returned: {0}", res);
+            if (res)
+            {
+                AppendResultLine("State = {0}", sd.State);
+                AppendResultLine("User Name = {0}", sd.UserName);
+                AppendResultLine("E-Mail = {0}", sd.EMail);
+                AppendResultLine("Date of expiration = {0}", sd.Expires);
+                AppendResultLine("Max date of build = {0}", sd.MaxBuild);
+                AppendResultLine("Running time limit = {0} minutes", sd.RunningTime);
+                AppendResultLine("Length of user data = {0} bytes", sd.UserData.Length);
+            }*/
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             UnhookWindowsHookEx(_hookID);
@@ -341,6 +375,93 @@ namespace AntiAFK
         private void Window_Closed(object sender, EventArgs e)
         {
             // pass
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // Instantiate the dialog box
+            ActivateDialog dlg = new ActivateDialog();
+
+            // Configure the dialog box
+            dlg.Owner = this;
+            dlg.CodeFound += new CodeFoundEventHandler(dlg_CodeFound);
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+        }
+
+        [VMProtect.Begin]
+        void dlg_CodeFound(object sender, EventArgs e)
+        {
+
+            //Console.WriteLine("==============================");
+            // Get the find dialog box that raised the event
+            ActivateDialog dlg = (ActivateDialog)sender;
+
+            // Get find results and select found text
+            string code = dlg.ActivateCode;
+            string sn;
+            ActivationStatus status = VMProtect.SDK.ActivateLicense(code, out sn);
+            //Console.WriteLine("==============================" + status);
+            if (status == ActivationStatus.Ok)
+            {
+                var fileName = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "\\sn.txt");
+                File.WriteAllText(fileName, sn);
+
+                VMProtect.SerialNumberData sd;
+                var res = VMProtect.SDK.GetSerialNumberData(out sd);
+                if (res)
+                {
+                    //AppendResultLine("State = {0}", sd.State);
+                    //AppendResultLine("User Name = {0}", sd.UserName);
+                    //AppendResultLine("E-Mail = {0}", sd.EMail);
+                    //AppendResultLine("Date of expiration = {0}", sd.Expires);
+                    //AppendResultLine("Max date of build = {0}", sd.MaxBuild);
+                    //AppendResultLine("Running time limit = {0} minutes", sd.RunningTime);
+                    //AppendResultLine("Length of user data = {0} bytes", sd.UserData.Length);
+                    ExpireDateTime.Content = sd.Expires.ToString();
+                }
+            }
+            else if (status == ActivationStatus.NoConnection)
+            {
+                ExpireDateTime.Content = "网络连接失败，请检查网络";
+            }
+            else if (status == ActivationStatus.BadReply)
+            {
+                ExpireDateTime.Content = "激活服务器出现错误，请通知作者";
+            }
+            else if (status == ActivationStatus.Banned)
+            {
+                ExpireDateTime.Content = "此激活码已被禁止使用";
+            }
+            else if (status == ActivationStatus.Corrupted)
+            {
+                ExpireDateTime.Content = "激活服务出现异常，请通知作者";
+            }
+            else if (status == ActivationStatus.BadCode)
+            {
+                ExpireDateTime.Content = "激活失败，请检查激活码是否正确输入";
+            }
+            else if (status == ActivationStatus.AlreadyUsed)
+            {
+                ExpireDateTime.Content = "激活码已被使用";
+            }
+            else if (status == ActivationStatus.SerialUnknown)
+            {
+                ExpireDateTime.Content = "激活码不存在，请联系作者";
+            }
+            else if (status == ActivationStatus.Expired)
+            {
+                ExpireDateTime.Content = "激活码已过期";
+            }
+            else if (status == ActivationStatus.NotAvailable)
+            {
+                ExpireDateTime.Content = "激活服务失效了，请通知作者";
+            }
+            else
+            {
+                ExpireDateTime.Content = "激活失败，原因未知，请联系作者";
+            }
         }
     }
 }
