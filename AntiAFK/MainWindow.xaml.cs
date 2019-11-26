@@ -23,6 +23,9 @@ using System.IO;
 using System.Management;  // <=== Add Reference required!!
 using Keyboard;
 using VMProtect;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Accord.Imaging;
 
 namespace AntiAFK
 {
@@ -112,12 +115,25 @@ namespace AntiAFK
         private const int WH_KEYBOARD_LL = 13;
 
         private const int WM_KEYDOWN = 0x0100;
+        private const UInt32 WM_CLOSE = 0x0010;
 
         private static List<IntPtr> mWindows;
+
+        private static IntPtr mBattleNet;
+        private static IntPtr mWowWindow;
 
         private static int mLogoutInterval = 5;
         DispatcherTimer mUITimer = new DispatcherTimer();
         DispatcherTimer mAFKTimer = new DispatcherTimer();
+
+        enum MyState
+        {
+            Initial = 0,
+            Ready = 1,
+
+        }
+
+        private MyState mState = MyState.Initial;
 
         private static bool ControlAltPressed
         {
@@ -183,23 +199,6 @@ namespace AntiAFK
         [VMProtect.Begin]
         async Task AvoidOffline(IntPtr winHandle)
         {
-            //KeyPress(handle, Keys.OemQuestion, 500);
-            //KeyPress(handle, Keys.D, 500);
-            //KeyPress(handle, Keys.A, 500);
-            //KeyPress(handle, Keys.N, 500);
-            //KeyPress(handle, Keys.C, 500);
-            //KeyPress(handle, Keys.E, 500);
-
-            //SetForegroundWindow(winHandle);
-
-            /*System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
-            SendKeys.SendWait("~");
-            SendKeys.SendWait("^v");
-            SendKeys.SendWait("~");*/
-            //System.Threading.Thread.Sleep(500); // 暂停半秒钟
-            //SendKeys.SendWait("{Enter}");
-            //SendKeys.Flush();
-
             var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
             x.Status = "正在小退中";
             string message = "/logout";
@@ -220,21 +219,28 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void AntiAFKTimerFunc(object sender, EventArgs e)
         {
-            Console.WriteLine("======AntiAFKTimerFunc=======");
-            for (int i = 0; i < mWindows.Count(); i++)
+            //Console.WriteLine("======多开版本=======");
+            /*for (int i = 0; i < mWindows.Count(); i++)
             {
                 IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
                     await AvoidOffline(winHandle);
                 }
+            }*/
+
+            // 个人完美版
+            if (IsWindow(mWowWindow))
+            {
+                await AvoidOffline(mWowWindow);
             }
         }
 
         [VMProtect.Begin]
         async void UpdateUITimerFunc(object sender, EventArgs e)
         {
-            for (int i=0; i<mWindows.Count(); i++)
+            // 多开版本
+            /*for (int i=0; i<mWindows.Count(); i++)
             {
                 IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
@@ -266,6 +272,67 @@ namespace AntiAFK
                     }
                     //mWindows.Remove(winHandle);
                 }
+            }*/
+
+            // 个人完美版
+            if (FindImage())
+            {
+                mAFKTimer.Stop();
+                SendMessage(mWowWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                
+                var x = mWowWindowList.Where(ou => ou.Ptr == mWowWindow.ToString()).Single();
+                x.Status = "游戏窗口已经关闭";
+
+                await Task.Delay(5000); // 推迟5秒执行
+                Keyboard.Messaging.SendChatTextSend(mBattleNet, "");  // 回车键：启动游戏
+
+                await Task.Delay(10000); // 推迟10秒执行
+                foreach (Process pList in Process.GetProcesses())
+                {
+                    if (pList.MainWindowTitle.Contains("魔兽世界"))
+                    {
+                        mWowWindow = pList.MainWindowHandle;
+                        x.Status = "游戏窗口重新登录成功";
+                        x.Ptr = mWowWindow.ToString();
+
+                        await Task.Delay(10000); // 推迟10秒执行
+                        Keyboard.Messaging.SendChatTextSend(mWowWindow, "");  // 回车键：确认角色选择
+                        mAFKTimer.Start();
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        async Task PrepareAllThings()
+        {
+            //个人完美版
+            mBattleNet = IntPtr.Zero;
+            mWowWindow = IntPtr.Zero;
+            foreach (Process pList in Process.GetProcesses())
+            {
+                if (pList.MainWindowTitle.Contains("暴雪战网"))
+                {
+                    mBattleNet = pList.MainWindowHandle;
+                    mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = mBattleNet.ToString(), Name = "暴雪战网客户端", Status = "准备好了" });
+                }
+                else if (pList.MainWindowTitle.Contains("魔兽世界"))
+                {
+                    mWowWindow = pList.MainWindowHandle;
+                    mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = mWowWindow.ToString(), Name = "魔兽怀旧服客户端", Status = "准备好了" });
+                }
+            }
+
+            if (IsWindow(mBattleNet) && IsWindow(mWowWindow))
+            {
+                mState = MyState.Ready;
+                // 立即执行一次操作
+                await AvoidOffline(mWowWindow);
+            }
+            else
+            {
+                mState = MyState.Initial;
             }
         }
 
@@ -293,8 +360,8 @@ namespace AntiAFK
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
-        [DllImport("User32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, string lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, uint lParam);
@@ -326,14 +393,6 @@ namespace AntiAFK
             t.AutoReset = true; // Stops it from repeating
             t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
             t.Start();*/
-            
-            mUITimer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
-            mUITimer.Tick += UpdateUITimerFunc;
-            mUITimer.Start();
-            
-            mAFKTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
-            mAFKTimer.Tick += AntiAFKTimerFunc;
-            mAFKTimer.Start();
 
             DataContext = mWowWindowList;
         }
@@ -472,5 +531,74 @@ namespace AntiAFK
             mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
             mAFKTimer.Interval = TimeSpan.FromSeconds(10 * mLogoutInterval);
         }
+
+        public static Bitmap PrintWindow(IntPtr hwnd)
+        {
+            Bitmap bitmap = Direct3DCapture.CaptureWindow(hwnd);
+            //bitmap.Save("c:/3.bmp");
+            return ConvertToFormat(bitmap, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+        }
+
+        private static Bitmap ConvertToFormat(System.Drawing.Image image, System.Drawing.Imaging.PixelFormat format)
+        {
+            Bitmap copy = new Bitmap(image.Width, image.Height, format);
+            using (Graphics gr = Graphics.FromImage(copy))
+            {
+                gr.DrawImage(image, new System.Drawing.Rectangle(0, 0, copy.Width, copy.Height));
+            }
+            return copy;
+        }
+
+        private bool FindImage()
+        {
+            bool result = false;
+
+            if (IsWindow(mWowWindow))
+            {
+                System.Drawing.Bitmap template = ConvertToFormat(AntiAFK.Properties.Resources.test, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                //template.Save("c:/1.bmp");
+                Console.WriteLine(template.Height);
+
+                Bitmap sourceImage = PrintWindow(mWowWindow);
+                Console.WriteLine(sourceImage.Height);
+                //sourceImage.Save("c:/2.bmp");
+
+                ExhaustiveTemplateMatching etm = new ExhaustiveTemplateMatching(0.921f);
+                TemplateMatch[] matchings = etm.ProcessImage(sourceImage, template);
+                // highlight found matchings
+
+                BitmapData data = sourceImage.LockBits(
+                     new System.Drawing.Rectangle(0, 0, sourceImage.Width, sourceImage.Height),
+                     ImageLockMode.ReadWrite, sourceImage.PixelFormat);
+                foreach (TemplateMatch m in matchings)
+                {
+                    Console.WriteLine(m.Rectangle.Location.ToString());
+                    result = true;
+                    break;
+                }
+                sourceImage.UnlockBits(data);
+            }
+            
+            return result;
+        }
+
+        private async void AutoItButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            await PrepareAllThings();
+
+            if (mState == MyState.Ready)
+            {
+                AutoItButton.Content = "停止";
+            }
+
+            mUITimer.Interval = TimeSpan.FromSeconds(30); // 30秒执行一次
+            mUITimer.Tick += UpdateUITimerFunc;
+            mUITimer.Start();
+
+            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * 5); // 5分钟执行一次
+            mAFKTimer.Interval = TimeSpan.FromSeconds(10 * mLogoutInterval);
+            mAFKTimer.Start();
+        }
+
     }
 }

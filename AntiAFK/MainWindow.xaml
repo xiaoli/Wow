@@ -43,7 +43,7 @@
         <Label Content="分钟" HorizontalAlignment="Left" Margin="101,237,0,0" VerticalAlignment="Top" Grid.Column="1" />
 
         <TextBox x:Name="InstallPathTextBox" Padding="5 0 0 0" VerticalContentAlignment="Center" BorderThickness="1" Opacity="1" IsReadOnly="True" Width="230" Height="28" Foreground="White" Grid.ColumnSpan="2" Margin="34,239,80,133" Grid.Column="1" Visibility="Hidden"></TextBox>
-        <Button Width="38" Height="28" Content="浏览" Margin="125,234,35,128" Click="OpenFolderButtonOnClick" BorderThickness="0" Grid.Column="2" Visibility="Hidden" />
+        <Button x:Name="AutoItButton" Width="38" Height="28" Content="开始" Margin="125,234,35,128" Click="AutoItButtonOnClick" BorderThickness="0" Grid.Column="2"  />
         <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" />
     </Grid>
 </Window>
