@@ -1,0 +1,52 @@
+﻿<Window x:Class="AutoChatting.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutoChatting"
+        mc:Ignorable="d"
+        ResizeMode="CanMinimize"
+        Title="魔兽怀旧服自动喊话机 V0.01" Height="450" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="140*"/>
+            <ColumnDefinition Width="290*"/>
+        </Grid.ColumnDefinitions>
+        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="200" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="序号"  Width="50" DisplayMemberBinding="{Binding Id}"/>
+                    <GridViewColumn Header="窗口"  Width="140" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="状态"  Width="290" DisplayMemberBinding="{Binding Status}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+8 即可。" HorizontalAlignment="Left" Margin="5,1,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259"/>
+        <Label Content="自动发送间隔时间：" HorizontalAlignment="Left" Margin="104,237,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Width="112" />
+        <ComboBox x:Name="ChattingIntervalComboBox" Grid.Column="2" HorizontalAlignment="Left" Margin="70,239,0,0" VerticalAlignment="Top" Width="35" SelectedIndex="4"  SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Content="1" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="3" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="4" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="5" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="6" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="7" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="8" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="9" HorizontalAlignment="Left" Width="35" />
+            <ComboBoxItem Content="10" HorizontalAlignment="Left" Width="35" />
+        </ComboBox>
+        <Label Content="分钟" HorizontalAlignment="Left" Margin="104,237,0,0" VerticalAlignment="Top" Grid.Column="2" />
+        <TextBox x:Name="ChattingContentTextBox" TextWrapping="Wrap" AcceptsReturn="True" Padding="5 0 0 0" VerticalContentAlignment="Top" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" BorderThickness="1" Opacity="1" IsReadOnly="False" Foreground="Black" Grid.ColumnSpan="3" Margin="13,271,169,57"/>
+        <Button Content="立即发送" Margin="173,304,43,75" BorderThickness="0" Grid.Column="2" Click="Button_Click" />
+        <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" />
+        <Label Content="聊天频道：" HorizontalAlignment="Left" Margin="12,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <ComboBox x:Name="ChattingChannelComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="22,239,0,0" VerticalAlignment="Top" Width="82" SelectedIndex="0"  SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Content="频道一" HorizontalAlignment="Left" Width="82" />
+            <ComboBoxItem Content="频道二" HorizontalAlignment="Left" Width="82" />
+            <ComboBoxItem Content="频道三" HorizontalAlignment="Left" Width="82" />
+            <ComboBoxItem Content="频道四" HorizontalAlignment="Left" Width="82" />
+        </ComboBox>
+        <Label Content="作者：不想写代码@比格沃斯&lt;黑名单&gt;公会" HorizontalAlignment="Left" Margin="14,379,0,0" VerticalAlignment="Top" Width="300" Grid.ColumnSpan="3" />
+    </Grid>
+</Window>
