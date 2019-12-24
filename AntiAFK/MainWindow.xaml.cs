@@ -331,7 +331,7 @@ namespace AntiAFK
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
             
-            mAFKTimer.Interval = TimeSpan.FromSeconds(60*5); // 5分钟执行一次
+            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval); // 默认，5分钟执行一次
             mAFKTimer.Tick += AntiAFKTimerFunc;
             mAFKTimer.Start();
 
@@ -470,7 +470,7 @@ namespace AntiAFK
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
-            mAFKTimer.Interval = TimeSpan.FromSeconds(10 * mLogoutInterval);
+            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval);
         }
     }
 }

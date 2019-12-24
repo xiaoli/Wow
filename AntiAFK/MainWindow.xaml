@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AntiAFK"
         mc:Ignorable="d"
+        ResizeMode="CanMinimize"
         Closing="Window_Closing" Closed="Window_Closed"
-        Title="魔兽怀旧服防掉线 V0.01" Height="419" Width="399">
+        Title="魔兽怀旧服防掉线 V0.03" Height="419" Width="399">
     <Grid Width="396" Height="400" Margin="0,10,0,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="140*"/>
-            <ColumnDefinition Width="190*"/>
+            <ColumnDefinition Width="26*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="99*"/>
         </Grid.ColumnDefinitions>
         <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="200" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
             <ListView.View>
@@ -39,6 +40,7 @@
             <ComboBoxItem Content="8" HorizontalAlignment="Left" Width="50" />
             <ComboBoxItem Content="9" HorizontalAlignment="Left" Width="50" />
             <ComboBoxItem Content="10" HorizontalAlignment="Left" Width="50" />
+            <ComboBoxItem Content="30" HorizontalAlignment="Left" Width="50" />
         </ComboBox>
         <Label Content="分钟" HorizontalAlignment="Left" Margin="101,237,0,0" VerticalAlignment="Top" Grid.Column="1" />
 
