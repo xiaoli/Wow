@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyboard", "Keyboard\Keyboa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChatting", "AutoChatting\AutoChatting.csproj", "{423DF7DA-BB32-4631-8D94-68D4AF4A9676}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoFarm", "AutoFarm\AutoFarm.csproj", "{D8D169B2-7254-4827-BE26-D9396D7FE274}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{423DF7DA-BB32-4631-8D94-68D4AF4A9676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{423DF7DA-BB32-4631-8D94-68D4AF4A9676}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{423DF7DA-BB32-4631-8D94-68D4AF4A9676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8D169B2-7254-4827-BE26-D9396D7FE274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8D169B2-7254-4827-BE26-D9396D7FE274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8D169B2-7254-4827-BE26-D9396D7FE274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8D169B2-7254-4827-BE26-D9396D7FE274}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
