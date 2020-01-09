@@ -185,9 +185,9 @@ namespace AntiAFK
         {
             while(true)
             {
-                var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
-                x.Status = "正在执行中";
-
+                // 以下是自动打怪的指令，还不成熟 me@20200109
+                /*var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+                x.Status = "正在打怪中";
 
                 var key_5 = new Keyboard.Key(Messaging.VKeys.KEY_5);
                 var key_3 = new Keyboard.Key(Messaging.VKeys.KEY_3);
@@ -200,80 +200,77 @@ namespace AntiAFK
                 key_5.PressBackground(winHandle);
                 await Task.Delay(500);
                 key_j.PressBackground(winHandle);
-                await Task.Delay(2000);
+                await Task.Delay(500);
                 key_3.PressBackground(winHandle);
-                await Task.Delay(1600);
+                await Task.Delay(1500);
                 key_3.PressBackground(winHandle);
-                await Task.Delay(1600);
+                await Task.Delay(1500);
                 key_3.PressBackground(winHandle);
-                await Task.Delay(1600);
+                await Task.Delay(1500);
                 key_3.PressBackground(winHandle);
-                await Task.Delay(1600);
+                await Task.Delay(1500);
                 key_3.PressBackground(winHandle);
-                await Task.Delay(1600);
+                await Task.Delay(1500);
                 key_6.PressBackground(winHandle);
                 await Task.Delay(1000);
                 key_j.PressBackground(winHandle);
+                await Task.Delay(1500);
+
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_w.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+
+                key_d.PressBackground(winHandle);
+                key_d.PressBackground(winHandle);
+                key_d.PressBackground(winHandle);
+                key_d.PressBackground(winHandle);
+                key_d.PressBackground(winHandle);*/
+
+
+
+                var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+                x.Status = "正在战场中";
+
+                var key_1 = new Keyboard.Key(Messaging.VKeys.KEY_1);
+                var key_5 = new Keyboard.Key(Messaging.VKeys.KEY_5);
+                var key_3 = new Keyboard.Key(Messaging.VKeys.KEY_3);
+                var key_4 = new Keyboard.Key(Messaging.VKeys.KEY_4);
+                var key_j = new Keyboard.Key(Messaging.VKeys.KEY_J);
+                var key_6 = new Keyboard.Key(Messaging.VKeys.KEY_6);
+                var key_w = new Keyboard.Key(Messaging.VKeys.KEY_W);
+                var key_space = new Keyboard.Key(Messaging.VKeys.KEY_SPACE);
+                var key_q = new Keyboard.Key(Messaging.VKeys.KEY_Q);
+                var key_d = new Keyboard.Key(Messaging.VKeys.KEY_D);
+
+                key_1.PressBackground(winHandle);
+                await Task.Delay(1000);
+                key_j.PressBackground(winHandle);
                 await Task.Delay(3000);
-
+                key_1.PressBackground(winHandle);
+                await Task.Delay(1000);
                 key_w.PressBackground(winHandle);
-                key_q.PressBackground(winHandle);
                 key_w.PressBackground(winHandle);
-                key_q.PressBackground(winHandle);
                 key_w.PressBackground(winHandle);
-                key_q.PressBackground(winHandle);
                 key_w.PressBackground(winHandle);
-                key_q.PressBackground(winHandle);
                 key_w.PressBackground(winHandle);
-                key_q.PressBackground(winHandle);
+                key_space.PressBackground(winHandle);
                 key_w.PressBackground(winHandle);
+                key_space.PressBackground(winHandle);
+                await Task.Delay(1000);
                 key_q.PressBackground(winHandle);
-
-                key_d.PressBackground(winHandle);
-                key_d.PressBackground(winHandle);
-                key_d.PressBackground(winHandle);
-                key_d.PressBackground(winHandle);
-                key_d.PressBackground(winHandle);
+                key_q.PressBackground(winHandle);
+                key_3.PressBackground(winHandle);
+                await Task.Delay(1000);
             }
-            
-
-
-            /*Keyboard.Messaging.SendChatTextSend(winHandle, "5");
-            await Task.Delay(500);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "j");
-            await Task.Delay(2000);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "3");
-            await Task.Delay(1600);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "3");
-            await Task.Delay(1600);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "3");
-            await Task.Delay(1600);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "3");
-            await Task.Delay(1600);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "3");
-            await Task.Delay(1600);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "6");
-            await Task.Delay(1000);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "j");
-            await Task.Delay(3000);
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "w");
-            Keyboard.Messaging.SendChatTextSend(winHandle, "q");*/
         }
 
         [VMProtect.Begin]
