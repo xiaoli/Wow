@@ -208,6 +208,23 @@ namespace AntiAFK
             await Task.Delay(30000); // 推迟30秒执行
             //x.Status = VMProtect.SDK.DecryptString("正在登录中");
             x.Status = "正在登录中";
+
+            // 随机的上或下，选择新的角色
+            Random random = new Random();
+            int randomInt = random.Next(1, 2);
+            if (randomInt == 1)
+            {
+                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
+                //System.Diagnostics.Debug.WriteLine("选择新的角色=下");
+            }
+            else
+            {
+                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_UP);  // 上键
+                //System.Diagnostics.Debug.WriteLine("选择新的角色=上");
+            }
+
+            await Task.Delay(2000); // 推迟2秒执行
+
             Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
 
             // 以下方法不靠谱，因为任何一个窗口的激活，都会导致游戏窗口不在Foreground状态中，从而无法发送键盘输入
@@ -220,13 +237,14 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void AntiAFKTimerFunc(object sender, EventArgs e)
         {
-            Console.WriteLine("======AntiAFKTimerFunc=======");
+            //Console.WriteLine("======AntiAFKTimerFunc=======");
             for (int i = 0; i < mWindows.Count(); i++)
             {
                 IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                 {
                     await AvoidOffline(winHandle);
+                    UpdateInterval();
                 }
             }
         }
@@ -467,10 +485,41 @@ namespace AntiAFK
             }
         }
 
+        private void UpdateInterval()
+        {
+            int i = LogoutIntervalComboBox.SelectedIndex;
+            if (i <= 9)
+            {
+                mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
+            }
+            else
+            {
+                Random random = new Random();
+                if (i == 10)
+                {
+                    int randomInt = random.Next(1, 5);
+                    mLogoutInterval = randomInt;
+                }
+                else if (i == 11)
+                {
+                    int randomInt = random.Next(5, 10);
+                    mLogoutInterval = randomInt;
+                }
+                else if (i == 12)
+                {
+                    int randomInt = random.Next(1, 10);
+                    mLogoutInterval = randomInt;
+                }
+            }
+
+            //System.Diagnostics.Debug.WriteLine("间隔时间=" + mLogoutInterval.ToString());
+
+            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval);
+        }
+
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
-            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval);
+            UpdateInterval();
         }
     }
 }

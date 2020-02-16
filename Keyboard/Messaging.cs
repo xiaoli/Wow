@@ -604,7 +604,12 @@ namespace Keyboard
 			}
 		}
 
-		public static void SendChatTextPost(IntPtr hWnd, string msg)
+        public static void SendVKeys(IntPtr hWnd, VKeys key)
+        {
+            PostMessage(hWnd, new Key(key));
+        }
+
+        public static void SendChatTextPost(IntPtr hWnd, string msg)
 		{
 			PostMessage(hWnd, new Key(VKeys.KEY_RETURN));
 			foreach (char c in msg)
