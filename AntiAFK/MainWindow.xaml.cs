@@ -23,6 +23,8 @@ using System.IO;
 using System.Management;  // <=== Add Reference required!!
 using Keyboard;
 using VMProtect;
+using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace AntiAFK
 {
@@ -119,6 +121,9 @@ namespace AntiAFK
         DispatcherTimer mUITimer = new DispatcherTimer();
         DispatcherTimer mAFKTimer = new DispatcherTimer();
 
+        // 
+        private string jinri_token = "";
+
         private static bool ControlAltPressed
         {
             get
@@ -180,6 +185,35 @@ namespace AntiAFK
         private ObservableCollection<MyWowItem> _mWowWindowList = new ObservableCollection<MyWowItem>();
         public ObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
 
+        private string GetTalk()
+        {
+            #region 获得json数据
+            try
+            {
+                string url = "https://v1.hitokoto.cn/";
+                int timeout = 5000;
+                HttpWebResponse response = HttpWebResponseUtility.CreateGetHttpResponse(url, timeout, null, null);
+                if (response != null)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        //jsonText为获得的json字符串
+                        string jsonText = reader.ReadToEnd();
+                        //将json字符串解析成物料类
+                        dynamic stuff = JObject.Parse(jsonText);
+                        string sentence = stuff.hitokoto;
+                        return sentence;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+            #endregion
+            return "";
+        }
+
         [VMProtect.Begin]
         async Task AvoidOffline(IntPtr winHandle)
         {
@@ -228,8 +262,32 @@ namespace AntiAFK
             }
             
             await Task.Delay(2000); // 推迟2秒执行
-
+            // 执行选择角色，进入游戏
             Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
+
+            // 执行登录聊天说话
+            if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true)
+            {
+                await Task.Delay(20000); // 推迟20秒执行
+                string s = GetTalk();
+
+                if (RandomTalkCheckbox_Normal.IsChecked == true)
+                {
+                    Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 发送聊天
+                    Keyboard.Messaging.SendChatTextSend(winHandle, s);  // 发送聊天
+                    await Task.Delay(2000); // 推迟2秒执行
+                }
+                if (RandomTalkCheckbox_Shout.IsChecked == true)
+                {
+                    Keyboard.Messaging.SendChatTextSend(winHandle, "/y " + s);  // 发送聊天
+                    await Task.Delay(2000); // 推迟2秒执行
+                }
+                if (RandomTalkCheckbox_Group.IsChecked == true)
+                {
+                    Keyboard.Messaging.SendChatTextSend(winHandle, "/g " + s);  // 发送聊天                    
+                    await Task.Delay(2000); // 推迟2秒执行
+                }
+            }
 
             // 以下方法不靠谱，因为任何一个窗口的激活，都会导致游戏窗口不在Foreground状态中，从而无法发送键盘输入
             /*SetForegroundWindow(winHandle);
