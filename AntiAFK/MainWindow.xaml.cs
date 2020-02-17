@@ -121,9 +121,6 @@ namespace AntiAFK
         DispatcherTimer mUITimer = new DispatcherTimer();
         DispatcherTimer mAFKTimer = new DispatcherTimer();
 
-        // 
-        private string jinri_token = "";
-
         private static bool ControlAltPressed
         {
             get
@@ -166,7 +163,7 @@ namespace AntiAFK
 
                     if (GetWindowText(handle, Buff, nChars) > 0)
                     {
-                        Console.WriteLine(Buff.ToString());
+                        //Console.WriteLine(Buff.ToString());
                         if (Buff.ToString() == "魔兽世界")
                         {
                             mWindows.Add(handle);  // 把窗口handle加入List
@@ -583,6 +580,20 @@ namespace AntiAFK
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateInterval();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
+            mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == selected_lvi.Ptr.ToString()).Single());
+            for (int i = 0; i < mWindows.Count(); i++)
+            {
+                IntPtr winHandle = mWindows[i];
+                if (winHandle.ToString() == selected_lvi.Ptr.ToString())
+                {
+                    mWindows.Remove(winHandle);
+                }
+            }
         }
     }
 }
