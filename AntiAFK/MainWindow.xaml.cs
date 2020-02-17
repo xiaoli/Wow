@@ -210,19 +210,23 @@ namespace AntiAFK
             x.Status = "正在登录中";
 
             // 随机的上或下，选择新的角色
-            Random random = new Random();
-            int randomInt = random.Next(1, 2);
-            if (randomInt == 1)
+            if (RandomCharacterCheckbox.IsChecked == true)
             {
-                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
-                //System.Diagnostics.Debug.WriteLine("选择新的角色=下");
+                x.Status = "随机选择角色开启";
+                Random random = new Random();
+                int randomInt = random.Next(1, 2);
+                if (randomInt == 1)
+                {
+                    Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
+                    //System.Diagnostics.Debug.WriteLine("选择新的角色=下");
+                }
+                else
+                {
+                    Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_UP);  // 上键
+                    //System.Diagnostics.Debug.WriteLine("选择新的角色=上");
+                }
             }
-            else
-            {
-                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_UP);  // 上键
-                //System.Diagnostics.Debug.WriteLine("选择新的角色=上");
-            }
-
+            
             await Task.Delay(2000); // 推迟2秒执行
 
             Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
@@ -349,7 +353,8 @@ namespace AntiAFK
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
             
-            mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval); // 默认，5分钟执行一次
+            //mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval); // 默认，5分钟执行一次
+            UpdateInterval();
             mAFKTimer.Tick += AntiAFKTimerFunc;
             mAFKTimer.Start();
 
