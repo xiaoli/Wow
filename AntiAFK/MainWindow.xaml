@@ -10,9 +10,9 @@
         Title="魔兽怀旧服防掉线 V0.06" Height="419" Width="399">
     <Grid Width="396" Height="400" Margin="0,10,-3,-20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="26*"/>
+            <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="99*"/>
+            <ColumnDefinition Width="165*"/>
         </Grid.ColumnDefinitions>
         <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="200" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
             <ListView.ContextMenu>
@@ -24,7 +24,7 @@
                 <GridView x:Name="GameItemsGridView">
                     <GridViewColumn Header="序号"  Width="50" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="窗口"  Width="140" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="状态"  Width="190" DisplayMemberBinding="{Binding Status}"/>
+                    <GridViewColumn Header="状态"  Width="165" DisplayMemberBinding="{Binding Status}"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -34,20 +34,19 @@
         <Button Content="密钥" Grid.Column="2" HorizontalAlignment="Left" Margin="95,213,0,-32" VerticalAlignment="Top" Width="77" Click="Button_Click" Visibility="Hidden"/>
         <Label Content="作者：不想写代码@比格沃斯&lt;黑名单&gt;公会" HorizontalAlignment="Left" Margin="5,345,0,0" VerticalAlignment="Top" Width="300" Grid.ColumnSpan="3" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="50,239,0,0" VerticalAlignment="Top" Width="70" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged">
-            <ComboBoxItem Content="1" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="3" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="4" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="5" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="6" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="7" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="8" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="9" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="10" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="随机1-5" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="随机5-10" HorizontalAlignment="Left" Width="70" />
-            <ComboBoxItem Content="随机1-10" HorizontalAlignment="Left" Width="70" />
+        <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="50,239,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="3" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="4" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="5" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="6" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="7" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="8" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="9" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="10" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="随机2-5" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="随机5-10" HorizontalAlignment="Left" Width="80" />
+            <ComboBoxItem Content="随机2-10" HorizontalAlignment="Left" Width="80" />
         </ComboBox>
         <Label Content="分钟" HorizontalAlignment="Left" Margin="12,237,0,0" VerticalAlignment="Top" Grid.Column="2" />
 
@@ -55,9 +54,9 @@
         <Button Width="38" Height="28" Content="浏览" Margin="125,234,35,128" BorderThickness="0" Grid.Column="2" Visibility="Hidden" />
         <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <Label Content="随机选择角色：" HorizontalAlignment="Left" Margin="9,272,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将随机选择角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,277,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <Label Content="随机聊天选项：" HorizontalAlignment="Left" Margin="9,305,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,272,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,277,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,305,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="108,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="54,310,0,0" VerticalAlignment="Top"/>

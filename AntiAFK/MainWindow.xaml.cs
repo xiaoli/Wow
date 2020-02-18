@@ -35,6 +35,7 @@ namespace AntiAFK
         private string ptrValue = String.Empty;
         private string nameValue = String.Empty;
         private string statusValue = String.Empty;
+        private string pidValue = String.Empty;
 
         public string Id {
             get
@@ -90,6 +91,22 @@ namespace AntiAFK
                 if (value != this.statusValue)
                 {
                     this.statusValue = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public string Pid
+        {
+            get
+            {
+                return this.pidValue;
+            }
+            set
+            {
+                if (value != this.pidValue)
+                {
+                    this.pidValue = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -235,32 +252,23 @@ namespace AntiAFK
             x.Status = "正在小退中";
             string message = "/logout";
             Keyboard.Messaging.SendChatTextSend(winHandle, message);
-            
+
             await Task.Delay(30000); // 推迟30秒执行
             //x.Status = VMProtect.SDK.DecryptString("正在登录中");
             x.Status = "正在登录中";
 
-            // 随机的上或下，选择新的角色
+            // 自动向下，选择新的角色
             if (RandomCharacterCheckbox.IsChecked == true)
             {
-                x.Status = "随机选择角色开启";
-                Random random = new Random();
-                int randomInt = random.Next(1, 2);
-                if (randomInt == 1)
-                {
-                    Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
-                    //System.Diagnostics.Debug.WriteLine("选择新的角色=下");
-                }
-                else
-                {
-                    Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_UP);  // 上键
-                    //System.Diagnostics.Debug.WriteLine("选择新的角色=上");
-                }
+                x.Status = "自动切换角色开启";
+                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
             }
-            
+
             await Task.Delay(2000); // 推迟2秒执行
             // 执行选择角色，进入游戏
             Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
+
+            x.Status = "进入游戏中";
 
             // 执行登录聊天说话
             if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true)
@@ -311,7 +319,7 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void UpdateUITimerFunc(object sender, EventArgs e)
         {
-            for (int i=0; i<mWindows.Count(); i++)
+            for (int i = 0; i < mWindows.Count(); i++)
             {
                 IntPtr winHandle = mWindows[i];
                 if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
@@ -320,8 +328,11 @@ namespace AntiAFK
                     var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
                     if (found.Count() == 0)
                     {
+                        uint pid;
+                        GetWindowThreadProcessId(winHandle, out pid);
+
                         //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界怀旧服", Status = "准备好了" });
+                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "怀旧服 PID:" + pid.ToString(), Status = "准备好了", Pid = pid.ToString() });
 
                         //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
                         //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
@@ -380,6 +391,9 @@ namespace AntiAFK
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool IsWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
         public static void KeyPress(IntPtr windowHwnd, Keys key, int sleep = 100)
         {
             const int WM_KEYDOWN = 0x100;
@@ -403,11 +417,11 @@ namespace AntiAFK
             t.AutoReset = true; // Stops it from repeating
             t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
             t.Start();*/
-            
+
             mUITimer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
-            
+
             //mAFKTimer.Interval = TimeSpan.FromSeconds(60 * mLogoutInterval); // 默认，5分钟执行一次
             UpdateInterval();
             mAFKTimer.Tick += AntiAFKTimerFunc;
@@ -548,26 +562,26 @@ namespace AntiAFK
         private void UpdateInterval()
         {
             int i = LogoutIntervalComboBox.SelectedIndex;
-            if (i <= 9)
+            if (i <= 8)
             {
-                mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 1;
+                mLogoutInterval = LogoutIntervalComboBox.SelectedIndex + 2;
             }
             else
             {
                 Random random = new Random();
-                if (i == 10)
+                if (i == 9)
                 {
-                    int randomInt = random.Next(1, 5);
+                    int randomInt = random.Next(2, 5);
                     mLogoutInterval = randomInt;
                 }
-                else if (i == 11)
+                else if (i == 10)
                 {
                     int randomInt = random.Next(5, 10);
                     mLogoutInterval = randomInt;
                 }
-                else if (i == 12)
+                else if (i == 11)
                 {
-                    int randomInt = random.Next(1, 10);
+                    int randomInt = random.Next(2, 10);
                     mLogoutInterval = randomInt;
                 }
             }
