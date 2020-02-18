@@ -394,6 +394,9 @@ namespace AntiAFK
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
+        [DllImport("user32.dll")]
+        public static extern Int32 SetForegroundWindow(int hWnd);
+
         public static void KeyPress(IntPtr windowHwnd, Keys key, int sleep = 100)
         {
             const int WM_KEYDOWN = 0x100;
@@ -596,7 +599,7 @@ namespace AntiAFK
             UpdateInterval();
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void CancelAfkMenuOption_Click(object sender, RoutedEventArgs e)
         {
             MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
             mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == selected_lvi.Ptr.ToString()).Single());
@@ -606,8 +609,38 @@ namespace AntiAFK
                 if (winHandle.ToString() == selected_lvi.Ptr.ToString())
                 {
                     mWindows.Remove(winHandle);
+
+                    /*IntPtr bAddr = RemoteGetModuleHandleA(winHandle, "wowclassic.exe");
+
+                    Console.WriteLine(bAddr);
+
+                    IntPtr processHandle = OpenProcess(PROCESS_WM_READ, false, winHandle.ToInt32());
+
+                    IntPtr bytesRead;
+                    byte[] buffer = new byte[4];
+
+                    ReadProcessMemory(processHandle, bAddr + PlayerGUID, buffer, buffer.Length, out bytesRead);
+                    //Console.WriteLine(Encoding.Unicode.GetString(buffer) +
+                    //" (" + bytesRead.ToString() + "bytes)");
+                    PrintByteArray(buffer);
+
+                    Console.WriteLine(bAddr + PlayerGUID);*/
                 }
             }
         }
+
+        private void SetWindowFrontend_Click(object sender, RoutedEventArgs e)
+        {
+            MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
+            for (int i = 0; i < mWindows.Count(); i++)
+            {
+                IntPtr winHandle = mWindows[i];
+                if (winHandle.ToString() == selected_lvi.Ptr.ToString())
+                {
+                    SetForegroundWindow(winHandle);
+                }
+            }
+        }
+
     }
 }

@@ -17,7 +17,8 @@
         <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="200" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="取消防掉线" Click="MenuItem_Click" />
+                    <MenuItem Header="取消防掉线" Click="CancelAfkMenuOption_Click" />
+                    <MenuItem Header="前置游戏窗口" Click="SetWindowFrontend_Click" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.View>
