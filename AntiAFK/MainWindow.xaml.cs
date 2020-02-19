@@ -231,74 +231,88 @@ namespace AntiAFK
         [VMProtect.Begin]
         async Task AvoidOffline(IntPtr winHandle)
         {
-            //KeyPress(handle, Keys.OemQuestion, 500);
-            //KeyPress(handle, Keys.D, 500);
-            //KeyPress(handle, Keys.A, 500);
-            //KeyPress(handle, Keys.N, 500);
-            //KeyPress(handle, Keys.C, 500);
-            //KeyPress(handle, Keys.E, 500);
-
-            //SetForegroundWindow(winHandle);
-
-            /*System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
-            SendKeys.SendWait("~");
-            SendKeys.SendWait("^v");
-            SendKeys.SendWait("~");*/
-            //System.Threading.Thread.Sleep(500); // 暂停半秒钟
-            //SendKeys.SendWait("{Enter}");
-            //SendKeys.Flush();
-
-            var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
-            x.Status = "正在小退中";
-            string message = "/logout";
-            Keyboard.Messaging.SendChatTextSend(winHandle, message);
-
-            await Task.Delay(30000); // 推迟30秒执行
-            //x.Status = VMProtect.SDK.DecryptString("正在登录中");
-            x.Status = "正在登录中";
-
-            // 自动向下，选择新的角色
-            if (RandomCharacterCheckbox.IsChecked == true)
+            string destPath = System.IO.Path.Combine(Environment.CurrentDirectory, @"sn.txt");
+            try
             {
-                x.Status = "自动切换角色开启";
-                Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
+                var sn = File.ReadAllText(destPath);
+                var status = VMProtect.SDK.SetSerialNumber(sn);
+                VMProtect.SerialNumberData sd;
+                var res = VMProtect.SDK.GetSerialNumberData(out sd);
+                if (res)
+                {
+                    //KeyPress(handle, Keys.OemQuestion, 500);
+                    //KeyPress(handle, Keys.D, 500);
+                    //KeyPress(handle, Keys.A, 500);
+                    //KeyPress(handle, Keys.N, 500);
+                    //KeyPress(handle, Keys.C, 500);
+                    //KeyPress(handle, Keys.E, 500);
+
+                    //SetForegroundWindow(winHandle);
+
+                    /*System.Windows.Forms.Clipboard.SetText("/logout", System.Windows.Forms.TextDataFormat.Text);
+                    SendKeys.SendWait("~");
+                    SendKeys.SendWait("^v");
+                    SendKeys.SendWait("~");*/
+                    //System.Threading.Thread.Sleep(500); // 暂停半秒钟
+                    //SendKeys.SendWait("{Enter}");
+                    //SendKeys.Flush();
+
+                    var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+                    x.Status = "正在小退中";
+                    string message = "/logout";
+                    Keyboard.Messaging.SendChatTextSend(winHandle, message);
+
+                    await Task.Delay(30000); // 推迟30秒执行
+                                             //x.Status = VMProtect.SDK.DecryptString("正在登录中");
+                    x.Status = "正在登录中";
+
+                    // 自动向下，选择新的角色
+                    if (RandomCharacterCheckbox.IsChecked == true)
+                    {
+                        x.Status = "自动切换角色开启";
+                        Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
+                    }
+
+                    await Task.Delay(2000); // 推迟2秒执行
+                                            // 执行选择角色，进入游戏
+                    Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
+
+                    x.Status = "进入游戏中";
+
+                    // 执行登录聊天说话
+                    if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true)
+                    {
+                        await Task.Delay(20000); // 推迟20秒执行
+                        string s = GetTalk();
+
+                        if (RandomTalkCheckbox_Normal.IsChecked == true)
+                        {
+                            Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 发送聊天
+                            Keyboard.Messaging.SendChatTextSend(winHandle, s);  // 发送聊天
+                            await Task.Delay(2000); // 推迟2秒执行
+                        }
+                        if (RandomTalkCheckbox_Shout.IsChecked == true)
+                        {
+                            Keyboard.Messaging.SendChatTextSend(winHandle, "/y " + s);  // 发送聊天
+                            await Task.Delay(2000); // 推迟2秒执行
+                        }
+                        if (RandomTalkCheckbox_Group.IsChecked == true)
+                        {
+                            Keyboard.Messaging.SendChatTextSend(winHandle, "/g " + s);  // 发送聊天                    
+                            await Task.Delay(2000); // 推迟2秒执行
+                        }
+                    }
+
+                    // 以下方法不靠谱，因为任何一个窗口的激活，都会导致游戏窗口不在Foreground状态中，从而无法发送键盘输入
+                    /*SetForegroundWindow(winHandle);
+                    SendKeys.SendWait("{Enter}");
+                    SendKeys.Flush();
+                    Console.WriteLine("SEND KEYS TO ENTER");*/
+                }
             }
-
-            await Task.Delay(2000); // 推迟2秒执行
-            // 执行选择角色，进入游戏
-            Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
-
-            x.Status = "进入游戏中";
-
-            // 执行登录聊天说话
-            if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true)
+            catch (FileNotFoundException)
             {
-                await Task.Delay(20000); // 推迟20秒执行
-                string s = GetTalk();
-
-                if (RandomTalkCheckbox_Normal.IsChecked == true)
-                {
-                    Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 发送聊天
-                    Keyboard.Messaging.SendChatTextSend(winHandle, s);  // 发送聊天
-                    await Task.Delay(2000); // 推迟2秒执行
-                }
-                if (RandomTalkCheckbox_Shout.IsChecked == true)
-                {
-                    Keyboard.Messaging.SendChatTextSend(winHandle, "/y " + s);  // 发送聊天
-                    await Task.Delay(2000); // 推迟2秒执行
-                }
-                if (RandomTalkCheckbox_Group.IsChecked == true)
-                {
-                    Keyboard.Messaging.SendChatTextSend(winHandle, "/g " + s);  // 发送聊天                    
-                    await Task.Delay(2000); // 推迟2秒执行
-                }
             }
-
-            // 以下方法不靠谱，因为任何一个窗口的激活，都会导致游戏窗口不在Foreground状态中，从而无法发送键盘输入
-            /*SetForegroundWindow(winHandle);
-            SendKeys.SendWait("{Enter}");
-            SendKeys.Flush();
-            Console.WriteLine("SEND KEYS TO ENTER");*/
         }
 
         [VMProtect.Begin]
@@ -411,6 +425,22 @@ namespace AntiAFK
         {
             InitializeComponent();
 
+            string destPath = System.IO.Path.Combine(Environment.CurrentDirectory, @"sn.txt");
+            try
+            {
+                var sn = File.ReadAllText(destPath);
+                var status = VMProtect.SDK.SetSerialNumber(sn);
+                VMProtect.SerialNumberData sd;
+                var res = VMProtect.SDK.GetSerialNumberData(out sd);
+                if (res)
+                {
+                    ExpireDateTime.Content = sd.Expires.ToString();
+                }
+            }
+            catch (FileNotFoundException)
+            {
+            }
+
             mWindows = new List<IntPtr>();
 
             _hookID = SetHook(_proc);
@@ -433,38 +463,6 @@ namespace AntiAFK
             DataContext = mWowWindowList;
         }
 
-        private void CheckSerialNumber()
-        {
-            var fileName = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "\\sn.txt");
-
-            string sn_content = File.ReadAllText(fileName);
-
-            //VMProtect.SDK.ActivateLicense(sn_content);
-
-            /*var status = VMProtect.SDK.SetSerialNumber(path);
-            txtResult.Clear();
-            AppendResultLine("VMProtectSetSerialNumber() returned: {0}", status);
-            AppendResultLine("");
-
-            var status2 = VMProtect.SDK.GetSerialNumberState();
-            AppendResultLine("VMProtectGetSerialNumberState() returned: {0}", status2);
-            AppendResultLine("");
-
-            VMProtect.SerialNumberData sd;
-            var res = VMProtect.SDK.GetSerialNumberData(out sd);
-            AppendResultLine("VMProtectGetSerialNumberData() returned: {0}", res);
-            if (res)
-            {
-                AppendResultLine("State = {0}", sd.State);
-                AppendResultLine("User Name = {0}", sd.UserName);
-                AppendResultLine("E-Mail = {0}", sd.EMail);
-                AppendResultLine("Date of expiration = {0}", sd.Expires);
-                AppendResultLine("Max date of build = {0}", sd.MaxBuild);
-                AppendResultLine("Running time limit = {0} minutes", sd.RunningTime);
-                AppendResultLine("Length of user data = {0} bytes", sd.UserData.Length);
-            }*/
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             UnhookWindowsHookEx(_hookID);
@@ -475,6 +473,7 @@ namespace AntiAFK
             // pass
         }
 
+        [VMProtect.Begin]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // Instantiate the dialog box
@@ -503,9 +502,10 @@ namespace AntiAFK
             //Console.WriteLine("==============================" + status);
             if (status == ActivationStatus.Ok)
             {
-                var fileName = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "\\sn.txt");
-                File.WriteAllText(fileName, sn);
+                string destPath = System.IO.Path.Combine(Environment.CurrentDirectory, @"sn.txt");
+                File.WriteAllText(destPath, sn);
 
+                var s = VMProtect.SDK.SetSerialNumber(sn);
                 VMProtect.SerialNumberData sd;
                 var res = VMProtect.SDK.GetSerialNumberData(out sd);
                 if (res)
@@ -597,6 +597,105 @@ namespace AntiAFK
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateInterval();
+        }
+
+
+        public enum DwFilterFlag : uint
+        {
+            LIST_MODULES_DEFAULT = 0x0,    // This is the default one app would get without any flag.
+            LIST_MODULES_32BIT = 0x01,   // list 32bit modules in the target process.
+            LIST_MODULES_64BIT = 0x02,   // list all 64bit modules. 32bit exe will be stripped off.
+            LIST_MODULES_ALL = (LIST_MODULES_32BIT | LIST_MODULES_64BIT)   // list all the modules
+        }
+
+        [DllImport("psapi.dll", SetLastError = true)]
+        public static extern bool EnumProcessModulesEx(
+            IntPtr hProcess,
+            [Out] IntPtr lphModule,
+            UInt32 cb,
+            [MarshalAs(UnmanagedType.U4)] out UInt32 lpcbNeeded,
+            DwFilterFlag dwff);
+
+
+        [DllImport("psapi.dll")]
+        static extern uint GetModuleFileNameEx(
+            IntPtr hProcess,
+            IntPtr hModule,
+            [Out] StringBuilder lpBaseName,
+            [In] [MarshalAs(UnmanagedType.U4)] int nSize);
+
+        private static String CutPath(String path)
+        {
+            int last = path.LastIndexOf("\\");
+            return path.Substring(last + 1, path.Length - last - 1);
+        }
+        /// <summary>
+        /// Returns the HMODULE, or module base address
+        /// </summary>
+        /// <param name="pid">IntPtr hProcess = OpenProcess(ProcessAccessFlags.All, false, pid);</param>
+        /// <param name="moduleName"></param>
+        public static IntPtr RemoteGetModuleHandleA(IntPtr hProcess, string moduleName)
+        {
+            IntPtr moduleBase = IntPtr.Zero;
+            uint[] modsInt = new uint[1024];
+
+            // Setting up the variable for the second argument for EnumProcessModules
+            IntPtr[] hMods = new IntPtr[1024];
+
+            GCHandle gch = GCHandle.Alloc(hMods, GCHandleType.Pinned); // Don't forget to free this later
+            IntPtr pModules = gch.AddrOfPinnedObject();
+
+            // Setting up the rest of the parameters for EnumProcessModules
+            uint uiSize = (uint)(Marshal.SizeOf(typeof(IntPtr)) * (hMods.Length));
+            uint cbNeeded = 0;
+
+            if (EnumProcessModulesEx(hProcess, pModules, uiSize, out cbNeeded, DwFilterFlag.LIST_MODULES_ALL) == true)
+            {
+
+                Int32 uiTotalNumberofModules = (Int32)(cbNeeded / (Marshal.SizeOf(typeof(IntPtr))));
+
+                for (int i = 0; i < (int)uiTotalNumberofModules; i++)
+                {
+                    StringBuilder strbld = new StringBuilder(1024);
+
+                    GetModuleFileNameEx(hProcess, hMods[i], strbld, (int)(strbld.Capacity));
+
+                    String module = strbld.ToString();
+                    String processModuleName = CutPath(module);
+                    Console.WriteLine("Comparing {0} {1}", processModuleName, moduleName);
+                    if (processModuleName.Equals(moduleName))
+                    {
+                        moduleBase = hMods[i];
+                        break;
+                    }
+                }
+            }
+
+            // Must free the GCHandle object
+            gch.Free();
+
+            return moduleBase;
+        }
+
+        const int PROCESS_WM_READ = 0x0010;
+        const int PlayerGUID = 0x25A9CD8;
+        const int GameVersion = 0x1C38A44;
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+        [DllImport("kernel32.dll")]
+        static extern bool ReadProcessMemory(IntPtr hProcess,
+        IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, out IntPtr lpNumberOfBytesRead);
+
+        static void PrintByteArray(byte[] bytes)
+        {
+            var sb = new StringBuilder("byte[] = ");
+
+            foreach (var b in bytes)
+                sb.Append(b + ", ");
+
+            Console.WriteLine(sb.ToString());
         }
 
         private void CancelAfkMenuOption_Click(object sender, RoutedEventArgs e)

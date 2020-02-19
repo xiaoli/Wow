@@ -17,8 +17,8 @@
         <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="200" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="取消防掉线" Click="CancelAfkMenuOption_Click" />
                     <MenuItem Header="前置游戏窗口" Click="SetWindowFrontend_Click" />
+                    <MenuItem Header="取消防掉线" Click="CancelAfkMenuOption_Click" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.View>
@@ -30,10 +30,9 @@
             </ListView.View>
         </ListView>
         <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,1,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259"/>
-        <Label Content="有效日期：" HorizontalAlignment="Left" Margin="5,211,0,-36" VerticalAlignment="Top" Width="70" Grid.ColumnSpan="2" Visibility="Hidden"/>
-        <Label x:Name="ExpireDateTime" Content="无" HorizontalAlignment="Left" Margin="13,211,0,-36" VerticalAlignment="Top" Width="223" Grid.ColumnSpan="2" Grid.Column="1" Visibility="Hidden"/>
-        <Button Content="密钥" Grid.Column="2" HorizontalAlignment="Left" Margin="95,213,0,-32" VerticalAlignment="Top" Width="77" Click="Button_Click" Visibility="Hidden"/>
-        <Label Content="作者：不想写代码@比格沃斯&lt;黑名单&gt;公会" HorizontalAlignment="Left" Margin="5,345,0,0" VerticalAlignment="Top" Width="300" Grid.ColumnSpan="3" />
+        <Label x:Name="ExpireDateTime" Content="" HorizontalAlignment="Right" Margin="0,330,23,0" VerticalAlignment="Top" Width="358" Grid.ColumnSpan="3"/>
+        <Button Content="激活" HorizontalAlignment="Left" Margin="15,351,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" />
+        <Label Content="作者：代码@比格沃斯&lt;黑名单&gt;公会" HorizontalAlignment="Left" Margin="116,350,0,0" VerticalAlignment="Top" Width="196" Grid.ColumnSpan="2" FontSize="10" Grid.Column="1" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="50,239,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
@@ -59,7 +58,7 @@
         <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,277,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,305,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="108,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="54,310,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="104,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="33,310,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
