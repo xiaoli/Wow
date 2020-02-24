@@ -5,13 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -20,11 +13,11 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.IO;
-using System.Management;  // <=== Add Reference required!!
-using Keyboard;
 using VMProtect;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using Tesseract;
+using System.Drawing;
 
 namespace AntiAFK
 {
@@ -235,9 +228,15 @@ namespace AntiAFK
             try
             {
                 var sn = File.ReadAllText(destPath);
-                var status = VMProtect.SDK.SetSerialNumber(sn);
+                VMProtect.SDK.SetSerialNumber(sn);
                 VMProtect.SerialNumberData sd;
                 var res = VMProtect.SDK.GetSerialNumberData(out sd);
+
+                var status = VMProtect.SDK.GetSerialNumberState();
+
+                //System.Windows.MessageBox.Show("res" + res.ToString());
+                //System.Windows.MessageBox.Show("status" + status.ToString());
+
                 if (res)
                 {
                     //KeyPress(handle, Keys.OemQuestion, 500);
@@ -440,6 +439,15 @@ namespace AntiAFK
             catch (FileNotFoundException)
             {
             }
+
+            /*TesseractEngine ocr;
+            ocr = new TesseractEngine(System.IO.Path.Combine(Environment.CurrentDirectory, @"tessdata"), "chi_sim");//设置语言   中文
+            Bitmap bit = new Bitmap(System.Drawing.Image.FromFile(System.IO.Path.Combine(Environment.CurrentDirectory, @"timg.jpg")));
+            //bit = PreprocesImage(bit);//进行图像处理,如果识别率低可试试
+            Tesseract.Page page = ocr.Process(bit);
+            string str = page.GetText();//识别后的内容
+            page.Dispose();
+            System.Windows.MessageBox.Show(str);*/
 
             mWindows = new List<IntPtr>();
 

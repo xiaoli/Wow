@@ -30,9 +30,9 @@
             </ListView.View>
         </ListView>
         <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,1,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259"/>
-        <Label x:Name="ExpireDateTime" Content="" HorizontalAlignment="Right" Margin="0,330,23,0" VerticalAlignment="Top" Width="358" Grid.ColumnSpan="3"/>
-        <Button Content="激活" HorizontalAlignment="Left" Margin="15,351,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" />
-        <Label Content="作者：代码@比格沃斯&lt;黑名单&gt;公会" HorizontalAlignment="Left" Margin="116,350,0,0" VerticalAlignment="Top" Width="196" Grid.ColumnSpan="2" FontSize="10" Grid.Column="1" />
+        <Label x:Name="ExpireDateTime" Content="" HorizontalAlignment="Right" Margin="0,319,84,0" VerticalAlignment="Top" Width="304" Grid.ColumnSpan="3"/>
+        <Button Content="激活" HorizontalAlignment="Left" Margin="143,322,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" />
+        <Label Content="2020.02.20 更新" HorizontalAlignment="Right" Margin="0,348,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="50,239,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
@@ -53,12 +53,11 @@
         <TextBox x:Name="InstallPathTextBox" Padding="5 0 0 0" VerticalContentAlignment="Center" BorderThickness="1" Opacity="1" IsReadOnly="True" Width="230" Height="28" Foreground="White" Grid.ColumnSpan="2" Margin="34,239,80,133" Grid.Column="1" Visibility="Hidden"></TextBox>
         <Button Width="38" Height="28" Content="浏览" Margin="125,234,35,128" BorderThickness="0" Grid.Column="2" Visibility="Hidden" />
         <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" />
-        <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,272,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,277,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,305,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-        <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="104,310,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="33,310,0,0" VerticalAlignment="Top"/>
+        <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,263,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,268,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,288,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,293,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="104,293,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="33,293,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
