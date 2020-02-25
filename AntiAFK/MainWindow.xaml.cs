@@ -244,55 +244,63 @@ namespace AntiAFK
 
         async Task DetectDropLineImage(IntPtr winHandle)
         {
-            // 完整的屏幕截图
-            Bitmap s = CaptureWindow(winHandle);
-
-            //string bitmapPath = System.IO.Path.Combine(Environment.CurrentDirectory) + "\\sample.png";
-            //var bitmap = new Bitmap(bitmapPath);
-            var bitmap = new System.Windows.Media.Imaging.BitmapImage(new Uri(@"pack://application:,,,/"
-                        //+ System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
-                        //+ ";component/Resources/"
-                        + "sample.png", UriKind.Absolute));
-            
-            //var bitmap = new Bitmap(@"sample.png");
-
-            System.Drawing.Point p = new System.Drawing.Point(s.Width, s.Height);
-
-            await Task.Delay(500); // 推迟500ms执行
-
-            List<System.Drawing.Point> pl = FindPicture(BitmapImage2Bitmap(bitmap), s, 50);
-
-            if (pl.Count() > 0)
+            try
             {
-                //Console.WriteLine("==================yes!!!=================");
-                if (mWeChatWindow == IntPtr.Zero)
+                // 完整的屏幕截图
+                Bitmap s = CaptureWindow(winHandle);
+
+                //string bitmapPath = System.IO.Path.Combine(Environment.CurrentDirectory) + "\\sample.png";
+                //var bitmap = new Bitmap(bitmapPath);
+                var bitmap = new System.Windows.Media.Imaging.BitmapImage(new Uri(@"pack://application:,,,/"
+                            //+ System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
+                            //+ ";component/Resources/"
+                            + "sample.png", UriKind.Absolute));
+
+                //var bitmap = new Bitmap(@"sample.png");
+
+                System.Drawing.Point p = new System.Drawing.Point(s.Width, s.Height);
+
+                await Task.Delay(500); // 推迟500ms执行
+
+                List<System.Drawing.Point> pl = FindPicture(BitmapImage2Bitmap(bitmap), s, 50);
+
+                if (pl.Count() > 0)
                 {
-                    foreach (Process pList in Process.GetProcesses())
+                    //Console.WriteLine("==================yes!!!=================");
+                    if (mWeChatWindow == IntPtr.Zero)
                     {
-                        if (pList.MainWindowTitle.Contains("微信"))
-                        //Console.WriteLine("==================yes!!!=================" + pList.MainWindowTitle);
-                        //if (pList.MainWindowTitle.Contains("文件传输助手"))
+                        foreach (Process pList in Process.GetProcesses())
                         {
-                            mWeChatWindow = pList.MainWindowHandle;
-                            //Console.WriteLine("==================yes!!!mWeChatWindow=================");
-                            break;
+                            if (pList.MainWindowTitle.Contains("微信"))
+                            //Console.WriteLine("==================yes!!!=================" + pList.MainWindowTitle);
+                            //if (pList.MainWindowTitle.Contains("文件传输助手"))
+                            {
+                                mWeChatWindow = pList.MainWindowHandle;
+                                //Console.WriteLine("==================yes!!!mWeChatWindow=================");
+                                break;
+                            }
                         }
                     }
-                } 
 
-                if (mWeChatWindow != IntPtr.Zero)
-                {
-                    //Console.WriteLine("==================yes!!!掉下来了=================");
-                    await Task.Delay(1000);
-                    SetForegroundWindow(mWeChatWindow);
-                    await Task.Delay(2000);
+                    if (mWeChatWindow != IntPtr.Zero)
+                    {
+                        //Console.WriteLine("==================yes!!!掉下来了=================");
+                        await Task.Delay(1000);
+                        SetForegroundWindow(mWeChatWindow);
+                        await Task.Delay(2000);
 
-                    SetForegroundWindow(mWeChatWindow);
-                    SendKeys.SendWait(DateTime.Now.ToString() + " " + "我掉线了!!!");
-                    SendKeys.SendWait("{Enter}");
-                    SendKeys.Flush();
+                        SetForegroundWindow(mWeChatWindow);
+                        SendKeys.SendWait(DateTime.Now.ToString() + " " + "我掉线了!!!");
+                        SendKeys.SendWait("{Enter}");
+                        SendKeys.Flush();
+                    }
                 }
             }
+            catch
+            {
+                //Console.WriteLine("Some errors ...");
+            }
+            
         }
 
         [VMProtect.Begin]
@@ -463,7 +471,7 @@ namespace AntiAFK
                         }
                         if ((double)matchNum / sum >= matchRate)
                         {
-                            Console.WriteLine((double)matchNum / sum);
+                            //Console.WriteLine((double)matchNum / sum);
                             pointX = smallStartX + (int)(subWidth / 2.0);
                             pointY = smallStartY + (int)(subHeight / 2.0);
                             var point = new System.Drawing.Point(pointX, pointY);
@@ -888,7 +896,7 @@ namespace AntiAFK
 
                     String module = strbld.ToString();
                     String processModuleName = CutPath(module);
-                    Console.WriteLine("Comparing {0} {1}", processModuleName, moduleName);
+                    //Console.WriteLine("Comparing {0} {1}", processModuleName, moduleName);
                     if (processModuleName.Equals(moduleName))
                     {
                         moduleBase = hMods[i];
@@ -917,7 +925,7 @@ namespace AntiAFK
             foreach (var b in bytes)
                 sb.Append(b + ", ");
 
-            Console.WriteLine(sb.ToString());
+            //Console.WriteLine(sb.ToString());
         }
 
         private void CancelAfkMenuOption_Click(object sender, RoutedEventArgs e)
@@ -1174,7 +1182,10 @@ namespace AntiAFK
             // This gives us the width of the left, right and bottom chrome - we can then determine the top height
             int chromeWidth = (int)((windowRect.Width - clientRect.Width) / 2);
 
-            return new Rectangle(new System.Drawing.Point(windowRect.X + chromeWidth, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth)), clientRect.Size);
+            //Rectangle r = new Rectangle(new System.Drawing.Point(windowRect.X + chromeWidth, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth)), clientRect.Size);
+            Rectangle r = new Rectangle(new System.Drawing.Point(windowRect.X + chromeWidth + 300, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth) + 300), new System.Drawing.Size(200, 200));
+            //Console.WriteLine(r.X.ToString() + "==" + r.Y.ToString() + "==" + r.Width.ToString() + "==" + r.Height.ToString());
+            return r;
         }
     }
     #endregion
