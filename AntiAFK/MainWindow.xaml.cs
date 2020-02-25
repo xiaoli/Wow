@@ -279,7 +279,7 @@ namespace AntiAFK
                     x.Status = "进入游戏中";
 
                     // 执行登录聊天说话
-                    if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true)
+                    if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true || RandomTalkCheckbox_Team.IsChecked == true)
                     {
                         await Task.Delay(20000); // 推迟20秒执行
                         string s = GetTalk();
@@ -298,6 +298,11 @@ namespace AntiAFK
                         if (RandomTalkCheckbox_Group.IsChecked == true)
                         {
                             Keyboard.Messaging.SendChatTextSend(winHandle, "/g " + s);  // 发送聊天                    
+                            await Task.Delay(2000); // 推迟2秒执行
+                        }
+                        if (RandomTalkCheckbox_Team.IsChecked == true)
+                        {
+                            Keyboard.Messaging.SendChatTextSend(winHandle, "/p " + s);  // 发送聊天                    
                             await Task.Delay(2000); // 推迟2秒执行
                         }
                     }

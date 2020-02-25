@@ -58,6 +58,7 @@
         <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,288,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,293,0,0" VerticalAlignment="Top"/>
         <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="104,293,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="33,293,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Team" Content="队伍" Grid.Column="2" HorizontalAlignment="Left" Margin="33,293,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="87,293,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
