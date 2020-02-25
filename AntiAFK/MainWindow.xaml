@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Closing="Window_Closing" Closed="Window_Closed"
-        Title="魔兽怀旧服防掉线 V0.06" Height="419" Width="399">
+        Title="魔兽怀旧服防掉线 V0.07" Height="419" Width="399">
     <Grid Width="396" Height="400" Margin="0,10,-3,-20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50*"/>
@@ -19,6 +19,7 @@
                 <ContextMenu>
                     <MenuItem Header="前置游戏窗口" Click="SetWindowFrontend_Click" />
                     <MenuItem Header="取消防掉线" Click="CancelAfkMenuOption_Click" />
+                    <!--<MenuItem Header="截屏" Click="ScreenshotMenuOption_Click" />-->
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.View>
@@ -32,7 +33,7 @@
         <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,1,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259"/>
         <Label x:Name="ExpireDateTime" Content="" HorizontalAlignment="Right" Margin="0,319,84,0" VerticalAlignment="Top" Width="304" Grid.ColumnSpan="3"/>
         <Button Content="激活" HorizontalAlignment="Left" Margin="143,322,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" />
-        <Label Content="2020.02.20 更新" HorizontalAlignment="Right" Margin="0,348,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" />
+        <Label Content="2020.02.26 更新" HorizontalAlignment="Right" Margin="0,348,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
         <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="50,239,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
