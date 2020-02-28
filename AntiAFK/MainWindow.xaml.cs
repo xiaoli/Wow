@@ -521,13 +521,16 @@ namespace AntiAFK
         async void AntiAFKTimerFunc(object sender, EventArgs e)
         {
             //Console.WriteLine("======AntiAFKTimerFunc=======");
-            for (int i = 0; i < mWindows.Count(); i++)
+            if (AutoExitReturnCheckbox.IsChecked == true)
             {
-                IntPtr winHandle = mWindows[i];
-                if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                for (int i = 0; i < mWindows.Count(); i++)
                 {
-                    await AvoidOffline(winHandle);
-                    UpdateInterval();
+                    IntPtr winHandle = mWindows[i];
+                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                    {
+                        await AvoidOffline(winHandle);
+                        UpdateInterval();
+                    }
                 }
             }
         }
@@ -579,12 +582,15 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void DetectorTimerFunc(object sender, EventArgs e)
         {
-            for (int i = 0; i < mWindows.Count(); i++)
+            if (AutoWechatCheckbox.IsChecked == true)
             {
-                IntPtr winHandle = mWindows[i];
-                if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                for (int i = 0; i < mWindows.Count(); i++)
                 {
-                    await DetectDropLineImage(winHandle);
+                    IntPtr winHandle = mWindows[i];
+                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                    {
+                        await DetectDropLineImage(winHandle);
+                    }
                 }
             }
         }
