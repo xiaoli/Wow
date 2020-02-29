@@ -262,7 +262,7 @@ namespace AntiAFK
 
                 await Task.Delay(500); // 推迟500ms执行
 
-                List<System.Drawing.Point> pl = FindPicture(BitmapImage2Bitmap(bitmap), s, 50);
+                List<System.Drawing.Point> pl = FindPicture(BitmapImage2Bitmap(bitmap), s, 50, new System.Drawing.Rectangle(), 0.7);
 
                 if (pl.Count() > 0)
                 {
