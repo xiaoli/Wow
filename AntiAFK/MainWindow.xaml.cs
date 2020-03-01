@@ -129,8 +129,12 @@ namespace AntiAFK
         private const int W_WIDTH = 800;
         private const int W_HEIGHT = 600;
 
-        private static List<IntPtr> mWindows;
+        private static List<IntPtr> mWindows = new List<IntPtr>();
+
+        // 微信窗口
         private static IntPtr mWeChatWindow = IntPtr.Zero;
+        // 战网窗口
+        private static IntPtr mBattleNetWindow = IntPtr.Zero;
 
         private static int mLogoutInterval = 5;
         DispatcherTimer mUITimer = new DispatcherTimer();
@@ -266,31 +270,24 @@ namespace AntiAFK
 
                 if (pl.Count() > 0)
                 {
-                    //Console.WriteLine("==================yes!!!=================");
-                    if (mWeChatWindow == IntPtr.Zero)
-                    {
-                        foreach (Process pList in Process.GetProcesses())
-                        {
-                            if (pList.MainWindowTitle.Contains("微信"))
-                            //Console.WriteLine("==================yes!!!=================" + pList.MainWindowTitle);
-                            //if (pList.MainWindowTitle.Contains("文件传输助手"))
-                            {
-                                mWeChatWindow = pList.MainWindowHandle;
-                                //Console.WriteLine("==================yes!!!mWeChatWindow=================");
-                                break;
-                            }
-                        }
-                    }
-
-                    if (mWeChatWindow != IntPtr.Zero)
+                    if (AutoWechatCheckbox.IsChecked == true && mWeChatWindow != IntPtr.Zero && IsWindow(mWeChatWindow))
                     {
                         //Console.WriteLine("==================yes!!!掉下来了=================");
                         await Task.Delay(1000);
                         SetForegroundWindow(mWeChatWindow);
-                        await Task.Delay(2000);
+                        await Task.Delay(1000);
+                        
+                        SendKeys.SendWait(DateTime.Now.ToString() + " " + "我的魔兽游戏掉线了!");
+                        SendKeys.SendWait("{Enter}");
+                        SendKeys.Flush();
+                    }
 
-                        SetForegroundWindow(mWeChatWindow);
-                        SendKeys.SendWait(DateTime.Now.ToString() + " " + "我掉线了!!!");
+                    if (AutoReloginCheckbox.IsChecked == true && mBattleNetWindow != IntPtr.Zero && IsWindow(mBattleNetWindow))
+                    {
+                        await Task.Delay(1000);
+                        SetForegroundWindow(mBattleNetWindow);
+                        await Task.Delay(1000);
+
                         SendKeys.SendWait("{Enter}");
                         SendKeys.Flush();
                     }
@@ -538,43 +535,46 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void UpdateUITimerFunc(object sender, EventArgs e)
         {
-            for (int i = 0; i < mWindows.Count(); i++)
+            if (mWindows.Any())
             {
-                IntPtr winHandle = mWindows[i];
-                if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                for (int i = 0; i < mWindows.Count(); i++)
                 {
-                    // 查找，如果没有显示出来，则添加至界面显示
-                    var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
-                    if (found.Count() == 0)
+                    IntPtr winHandle = mWindows[i];
+                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                     {
-                        uint pid;
-                        GetWindowThreadProcessId(winHandle, out pid);
+                        // 查找，如果没有显示出来，则添加至界面显示
+                        var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
+                        if (found.Count() == 0)
+                        {
+                            uint pid;
+                            GetWindowThreadProcessId(winHandle, out pid);
 
-                        //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                        mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "怀旧服 PID:" + pid.ToString(), Status = "准备好了", Pid = pid.ToString() });
+                            //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
+                            mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "怀旧服 PID:" + pid.ToString(), Status = "准备好了", Pid = pid.ToString() });
 
-                        //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
-                        //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
+                            //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
+                            //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
 
-                        // 设置指定窗口大小
-                        SetWindowPos(winHandle, 0, 0, 0, W_WIDTH, W_HEIGHT, 0x46);
+                            // 设置指定窗口大小
+                            SetWindowPos(winHandle, 0, 0, 0, W_WIDTH, W_HEIGHT, 0x46);
 
-                        // 立即执行一次操作
-                        await AvoidOffline(winHandle);
+                            // 立即执行一次操作
+                            await AvoidOffline(winHandle);
+                        }
                     }
-                }
-                else // 否则，删除掉已经关闭/无效的窗口
-                {
-                    //GameListView.Items.Remove(found);
-                    //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
-                    var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
-                    if (found.Count() > 0)
+                    else // 否则，删除掉已经关闭/无效的窗口
                     {
+                        //GameListView.Items.Remove(found);
                         //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
-                        var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
-                        x.Status = "游戏窗口已经关闭";
+                        var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
+                        if (found.Count() > 0)
+                        {
+                            //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
+                            var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
+                            x.Status = "游戏窗口已经关闭";
+                        }
+                        //mWindows.Remove(winHandle);
                     }
-                    //mWindows.Remove(winHandle);
                 }
             }
         }
@@ -582,14 +582,34 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void DetectorTimerFunc(object sender, EventArgs e)
         {
-            if (AutoWechatCheckbox.IsChecked == true)
+            // 如果掉线微信提醒或者掉线自动重登被勾选
+            if (AutoWechatCheckbox.IsChecked == true || AutoReloginCheckbox.IsChecked == true)
             {
-                for (int i = 0; i < mWindows.Count(); i++)
+                if ((AutoWechatCheckbox.IsChecked == true && (mWeChatWindow == IntPtr.Zero || IsWindow(mWeChatWindow)))
+                        || (AutoReloginCheckbox.IsChecked == true && (mBattleNetWindow == IntPtr.Zero || IsWindow(mBattleNetWindow))))
                 {
-                    IntPtr winHandle = mWindows[i];
-                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                    foreach (Process pList in Process.GetProcesses())
                     {
-                        await DetectDropLineImage(winHandle);
+                        if (pList.MainWindowTitle.Contains("微信"))
+                        {
+                            mWeChatWindow = pList.MainWindowHandle;
+                        }
+                        if (pList.MainWindowTitle.Contains("暴雪战网"))
+                        {
+                            mBattleNetWindow = pList.MainWindowHandle;
+                        }
+                    }
+                }
+
+                if (mWindows.Any())
+                {
+                    for (int i = 0; i < mWindows.Count(); i++)
+                    {
+                        IntPtr winHandle = mWindows[i];
+                        if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                        {
+                            await DetectDropLineImage(winHandle);
+                        }
                     }
                 }
             }
@@ -678,8 +698,6 @@ namespace AntiAFK
             System.Windows.MessageBox.Show(str);
             Console.WriteLine(str);*/
 
-            mWindows = new List<IntPtr>();
-
             _hookID = SetHook(_proc);
 
             /*System.Timers.Timer t = new System.Timers.Timer();
@@ -688,7 +706,7 @@ namespace AntiAFK
             t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
             t.Start();*/
 
-            mUITimer.Interval = TimeSpan.FromSeconds(0.5); // 1秒执行一次
+            mUITimer.Interval = TimeSpan.FromSeconds(2); // 2秒执行一次
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
 
