@@ -20,7 +20,7 @@ namespace AntiAFK
         [VMProtect.Begin]
         protected override void OnStartup(StartupEventArgs e)
         {
-            const string appName = "A005B3C99F";
+            const string appName = "A0191RC99F";
             bool createdNew;
 
             _mutex = new Mutex(true, appName, out createdNew);
