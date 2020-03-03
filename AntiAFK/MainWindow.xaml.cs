@@ -58,52 +58,6 @@ namespace AntiAFK
                 return (System.Windows.Forms.Control.ModifierKeys & mods) == mods;
             }
         }
-        private const int nChars = 256;
-
-        private static LowLevelKeyboardProc _proc = HookCallback;
-
-        private static IntPtr _hookID = IntPtr.Zero;
-
-        [VMProtect.Begin]
-        private static IntPtr SetHook(LowLevelKeyboardProc proc)
-        {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule)
-            {
-                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
-                    GetModuleHandle(curModule.ModuleName), 0);
-            }
-        }
-
-        private delegate IntPtr LowLevelKeyboardProc(
-            int nCode, IntPtr wParam, IntPtr lParam);
-
-        [VMProtect.Begin]
-        private static IntPtr HookCallback(
-            int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
-            {
-                Keys key = (Keys)Marshal.ReadInt32(lParam);
-                if (key == Keys.D9 && ControlAltPressed)
-                {
-                    StringBuilder Buff = new StringBuilder(nChars);
-                    IntPtr handle = GetForegroundWindow();
-
-                    if (GetWindowText(handle, Buff, nChars) > 0)
-                    {
-                        //Console.WriteLine(Buff.ToString());
-                        if (Buff.ToString() == "魔兽世界")
-                        {
-                            mWindows.Add(handle);  // 把窗口handle加入List
-                        }
-                    }
-
-                    //Console.WriteLine("获取到游戏窗口");
-                }
-            }
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
-        }
 
         private string GetTalk()
         {
@@ -513,10 +467,6 @@ namespace AntiAFK
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook,
-            LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
@@ -585,9 +535,6 @@ namespace AntiAFK
             {
             }
 
-            // 改单机版了，无需再hook了 @ 20200303
-            //_hookID = SetHook(_proc);
-
             mUITimer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
@@ -606,7 +553,6 @@ namespace AntiAFK
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            UnhookWindowsHookEx(_hookID);
         }
 
         private void Window_Closed(object sender, EventArgs e)
