@@ -23,109 +23,17 @@ using Notifications.Wpf;
 
 namespace AntiAFK
 {
-    public class MyWowItem : INotifyPropertyChanged
-    {
-        // These fields hold the values for the public properties.  
-        private string idValue = String.Empty;
-        private string ptrValue = String.Empty;
-        private string nameValue = String.Empty;
-        private string statusValue = String.Empty;
-        private string pidValue = String.Empty;
-
-        public string Id {
-            get
-            {
-                return this.idValue;
-            }
-            set
-            {
-                if (value != this.idValue)
-                {
-                    this.idValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-        public string Ptr {
-            get
-            {
-                return this.ptrValue;
-            }
-            set
-            {
-                if (value != this.ptrValue)
-                {
-                    this.ptrValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-        public string Name {
-            get
-            {
-                return this.nameValue;
-            }
-            set
-            {
-                if (value != this.nameValue)
-                {
-                    this.nameValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public string Status
-        {
-            get
-            {
-                return this.statusValue;
-            }
-            set
-            {
-                if (value != this.statusValue)
-                {
-                    this.statusValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public string Pid
-        {
-            get
-            {
-                return this.pidValue;
-            }
-            set
-            {
-                if (value != this.pidValue)
-                {
-                    this.pidValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        // This method is called by the Set accessor of each property.  
-        // The CallerMemberName attribute that is applied to the optional propertyName  
-        // parameter causes the property name of the caller to be substituted as an argument.  
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const bool mDebug = false;
+
         private const int WH_KEYBOARD_LL = 13;
 
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_CLOSE = 0x0010;
 
         private const int W_WIDTH = 800;
         private const int W_HEIGHT = 600;
@@ -136,6 +44,8 @@ namespace AntiAFK
         private static IntPtr mWeChatWindow = IntPtr.Zero;
         // 战网窗口
         private static IntPtr mBattleNetWindow = IntPtr.Zero;
+        // 魔兽窗口
+        private static IntPtr mWowWindow = IntPtr.Zero;
 
         private static int mLogoutInterval = 5;
         DispatcherTimer mUITimer = new DispatcherTimer();
@@ -199,12 +109,6 @@ namespace AntiAFK
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
-        //private TrulyObservableCollection<MyWowItem> _mWowWindowList = new TrulyObservableCollection<MyWowItem>();
-        //public TrulyObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
-
-        private ObservableCollection<MyWowItem> _mWowWindowList = new ObservableCollection<MyWowItem>();
-        public ObservableCollection<MyWowItem> mWowWindowList { get { return _mWowWindowList; } }
-
         private string GetTalk()
         {
             #region 获得json数据
@@ -232,6 +136,13 @@ namespace AntiAFK
             }
             #endregion
             return "";
+        }
+
+        // 控制台日志显示
+        private void LoggingIt(string s)
+        {
+            string c = string.Format("{0} {1}{2}", DateTime.Now.ToString(), s, Environment.NewLine);
+            LogConentTextBox.AppendText(c);
         }
 
         private Bitmap BitmapImage2Bitmap(System.Windows.Media.Imaging.BitmapImage bitmapImage)
@@ -273,6 +184,9 @@ namespace AntiAFK
 
                 if (pl.Count() > 0)
                 {
+                    string c = "我尊贵的主人，游戏账号掉线啦！";
+                    LoggingIt(c);
+
                     /*if (AutoWechatCheckbox.IsChecked == true && mWeChatWindow != IntPtr.Zero && IsWindow(mWeChatWindow))
                     {
                         await Task.Delay(1000);
@@ -286,6 +200,10 @@ namespace AntiAFK
 
                     if (AutoReloginCheckbox.IsChecked == true && mBattleNetWindow != IntPtr.Zero && IsWindow(mBattleNetWindow))
                     {
+                        LoggingIt("正在自动重新登录游戏中...");
+
+                        SendMessage(winHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+
                         await Task.Delay(1000);
                         SetForegroundWindow(mBattleNetWindow);
                         await Task.Delay(1000);
@@ -293,13 +211,13 @@ namespace AntiAFK
                         SendKeys.SendWait("{Enter}");
                         SendKeys.Flush();
                     }
-
+                    
                     if (AutoDesktopNotificationCheckbox.IsChecked == true)
                     {
                         mNotificationManager.Show(new NotificationContent
                         {
                             Title = "魔兽世界怀旧服",
-                            Message = "我尊贵的主人，游戏账号掉线啦！",
+                            Message = c,
                             Type = NotificationType.Warning
                         });
                     }
@@ -346,33 +264,34 @@ namespace AntiAFK
                     //System.Threading.Thread.Sleep(500); // 暂停半秒钟
                     //SendKeys.SendWait("{Enter}");
                     //SendKeys.Flush();
+                    
+                    LoggingIt("正在小退中");
 
-                    var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
-                    x.Status = "正在小退中";
                     string message = "/logout";
                     Keyboard.Messaging.SendChatTextSend(winHandle, message);
 
                     await Task.Delay(30000); // 推迟30秒执行
-                                             //x.Status = VMProtect.SDK.DecryptString("正在登录中");
-                    x.Status = "正在登录中";
+                    LoggingIt("正在登录角色中");
 
                     // 自动向下，选择新的角色
                     if (RandomCharacterCheckbox.IsChecked == true)
                     {
-                        x.Status = "自动切换角色开启";
+                        LoggingIt("自动切换下一个角色");
                         Keyboard.Messaging.SendVKeys(winHandle, Keyboard.Messaging.VKeys.KEY_DOWN);  // 下键
                     }
 
                     await Task.Delay(2000); // 推迟2秒执行
                                             // 执行选择角色，进入游戏
                     Keyboard.Messaging.SendChatTextSend(winHandle, "");  // 回车键
-
-                    x.Status = "进入游戏中";
+                    
+                    LoggingIt("进入游戏中");
 
                     // 执行登录聊天说话
                     if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true || RandomTalkCheckbox_Team.IsChecked == true)
                     {
                         await Task.Delay(20000); // 推迟20秒执行
+
+                        LoggingIt("发送聊天消息");
 
                         string s = TalkConentTextBox.Text;
                         if (RandomTalkContentCheckbox_Robot.IsChecked == true)
@@ -534,63 +453,43 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void AntiAFKTimerFunc(object sender, EventArgs e)
         {
-            //Console.WriteLine("======AntiAFKTimerFunc=======");
+            if (mDebug)
+                LoggingIt("===AntiAFKTimerFunc START===");
+
             if (AutoExitReturnCheckbox.IsChecked == true)
             {
-                for (int i = 0; i < mWindows.Count(); i++)
+                if (IsWindow(mWowWindow)) // 如果是一个有效的窗口Handle
                 {
-                    IntPtr winHandle = mWindows[i];
-                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
-                    {
-                        await AvoidOffline(winHandle);
-                        UpdateInterval();
-                    }
+                    LoggingIt("AntiAFKTimerFunc");
+                    await AvoidOffline(mWowWindow);
+                    UpdateInterval();
                 }
             }
+
+            if (mDebug)
+                LoggingIt("===AntiAFKTimerFunc END===");
         }
 
         [VMProtect.Begin]
         async void UpdateUITimerFunc(object sender, EventArgs e)
         {
-            if (mWindows.Any())
+            // 如果魔兽窗口没找到，或者窗口已经关闭
+            if (!IsWindow(mWowWindow) || !IsWindow(mBattleNetWindow))
             {
-                for (int i = 0; i < mWindows.Count(); i++)
+                foreach (Process pList in Process.GetProcesses())
                 {
-                    IntPtr winHandle = mWindows[i];
-                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
+                    if (pList.MainWindowTitle.Contains("暴雪战网"))
                     {
-                        // 查找，如果没有显示出来，则添加至界面显示
-                        var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
-                        if (found.Count() == 0)
-                        {
-                            uint pid;
-                            GetWindowThreadProcessId(winHandle, out pid);
-
-                            //GameListView.Items.Add(new MyWowItem { Id = (mWindows.Count()+1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" });
-                            mWowWindowList.Add(new MyWowItem { Id = (mWindows.Count()).ToString(), Ptr = winHandle.ToString(), Name = "怀旧服 PID:" + pid.ToString(), Status = "准备好了", Pid = pid.ToString() });
-
-                            //MyWowItem newItem = new MyWowItem { Id = (mWindows.Count() + 1).ToString(), Ptr = winHandle.ToString(), Name = "魔兽世界" };
-                            //System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => this.mWowWindowList.Add(newItem)));
-
-                            // 设置指定窗口大小
-                            SetWindowPos(winHandle, 0, 0, 0, W_WIDTH, W_HEIGHT, 0x46);
-
-                            // 立即执行一次操作
-                            await AvoidOffline(winHandle);
-                        }
+                        mBattleNetWindow = pList.MainWindowHandle;
+                        LoggingIt("获取到战网客户端");
                     }
-                    else // 否则，删除掉已经关闭/无效的窗口
+                    if (pList.MainWindowTitle.Contains("魔兽世界") && !IsWindow(mWowWindow)) // 防止多个窗口，赋值覆盖
                     {
-                        //GameListView.Items.Remove(found);
-                        //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
-                        var found = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString());
-                        if (found.Count() > 0)
-                        {
-                            //mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single());
-                            var x = mWowWindowList.Where(ou => ou.Ptr == winHandle.ToString()).Single();
-                            x.Status = "游戏窗口已经关闭";
-                        }
-                        //mWindows.Remove(winHandle);
+                        mWowWindow = pList.MainWindowHandle;
+                        LoggingIt("获取到游戏客户端");
+
+                        // 设置指定窗口大小
+                        SetWindowPos(mWowWindow, 0, 0, 0, W_WIDTH, W_HEIGHT, 0x46);
                     }
                 }
             }
@@ -599,34 +498,9 @@ namespace AntiAFK
         [VMProtect.Begin]
         async void DetectorTimerFunc(object sender, EventArgs e)
         {
-            // 如果掉线微信提醒或者掉线自动重登被勾选
-            if (AutoReloginCheckbox.IsChecked == true)
+            if (IsWindow(mWowWindow)) // 如果是一个有效的窗口Handle
             {
-                if ((AutoReloginCheckbox.IsChecked == true && (mBattleNetWindow == IntPtr.Zero || IsWindow(mBattleNetWindow))))
-                {
-                    foreach (Process pList in Process.GetProcesses())
-                    {
-                        /*if (pList.MainWindowTitle.Contains("微信"))
-                        {
-                            mWeChatWindow = pList.MainWindowHandle;
-                        }*/
-                        if (pList.MainWindowTitle.Contains("暴雪战网"))
-                        {
-                            mBattleNetWindow = pList.MainWindowHandle;
-                        }
-                    }
-                }
-            }
-            if (mWindows.Any())
-            {
-                for (int i = 0; i < mWindows.Count(); i++)
-                {
-                    IntPtr winHandle = mWindows[i];
-                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
-                    {
-                        await DetectDropLineImage(winHandle);
-                    }
-                }
+                await DetectDropLineImage(mWowWindow);
             }
         }
 
@@ -653,9 +527,9 @@ namespace AntiAFK
 
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-
-        [DllImport("User32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, string lParam);
+        
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, uint lParam);
@@ -703,25 +577,10 @@ namespace AntiAFK
             {
             }
 
-            /*TesseractEngine ocr;
-            ocr = new TesseractEngine(System.IO.Path.Combine(Environment.CurrentDirectory, @"tessdata"), "chi_sim");//设置语言   中文
-            Bitmap bit = new Bitmap(System.Drawing.Image.FromFile(System.IO.Path.Combine(Environment.CurrentDirectory, @"m165.jpg")));
-            //bit = PreprocesImage(bit);//进行图像处理,如果识别率低可试试
-            Tesseract.Page page = ocr.Process(bit, PageSegMode.SingleBlockVertText);
-            string str = page.GetText();//识别后的内容
-            page.Dispose();
-            System.Windows.MessageBox.Show(str);
-            Console.WriteLine(str);*/
+            // 改单机版了，无需再hook了 @ 20200303
+            //_hookID = SetHook(_proc);
 
-            _hookID = SetHook(_proc);
-
-            /*System.Timers.Timer t = new System.Timers.Timer();
-            t.Interval = 5000; // In milliseconds
-            t.AutoReset = true; // Stops it from repeating
-            t.Elapsed += new System.Timers.ElapsedEventHandler(AntiTimer);
-            t.Start();*/
-
-            mUITimer.Interval = TimeSpan.FromSeconds(2); // 2秒执行一次
+            mUITimer.Interval = TimeSpan.FromSeconds(5); // 5秒执行一次
             mUITimer.Tick += UpdateUITimerFunc;
             mUITimer.Start();
 
@@ -733,8 +592,6 @@ namespace AntiAFK
             mDetectorTimer.Interval = TimeSpan.FromSeconds(15); // 15秒一次
             mDetectorTimer.Tick += DetectorTimerFunc;
             mDetectorTimer.Start();
-
-            DataContext = mWowWindowList;
 
             mNotificationManager = new NotificationManager();
         }
@@ -967,119 +824,6 @@ namespace AntiAFK
                 sb.Append(b + ", ");
 
             //Console.WriteLine(sb.ToString());
-        }
-
-        private void CancelAfkMenuOption_Click(object sender, RoutedEventArgs e)
-        {
-            MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
-            mWowWindowList.Remove(mWowWindowList.Where(ou => ou.Ptr == selected_lvi.Ptr.ToString()).Single());
-            for (int i = 0; i < mWindows.Count(); i++)
-            {
-                IntPtr winHandle = mWindows[i];
-                if (winHandle.ToString() == selected_lvi.Ptr.ToString())
-                {
-                    mWindows.Remove(winHandle);
-                    break;
-                    /*IntPtr bAddr = RemoteGetModuleHandleA(winHandle, "wowclassic.exe");
-
-                    Console.WriteLine(bAddr);
-
-                    IntPtr processHandle = OpenProcess(PROCESS_WM_READ, false, winHandle.ToInt32());
-
-                    IntPtr bytesRead;
-                    byte[] buffer = new byte[4];
-
-                    ReadProcessMemory(processHandle, bAddr + PlayerGUID, buffer, buffer.Length, out bytesRead);
-                    //Console.WriteLine(Encoding.Unicode.GetString(buffer) +
-                    //" (" + bytesRead.ToString() + "bytes)");
-                    PrintByteArray(buffer);
-
-                    Console.WriteLine(bAddr + PlayerGUID);*/
-                }
-            }
-        }
-
-        private void SetWindowFrontend_Click(object sender, RoutedEventArgs e)
-        {
-            MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
-            for (int i = 0; i < mWindows.Count(); i++)
-            {
-                IntPtr winHandle = mWindows[i];
-                if (winHandle.ToString() == selected_lvi.Ptr.ToString())
-                {
-                    SetForegroundWindow(winHandle);
-                    break;
-                }
-            }
-        }
-
-        private void ScreenshotMenuOption_Click(object sender, RoutedEventArgs e)
-        {
-            MyWowItem selected_lvi = this.GameListView.SelectedItem as MyWowItem;
-            for (int i = 0; i < mWindows.Count(); i++)
-            {
-                IntPtr winHandle = mWindows[i];
-                if (winHandle.ToString() == selected_lvi.Ptr.ToString())
-                {
-                    // 完整的屏幕截图
-                    Bitmap s = CaptureWindow(winHandle); 
-
-                    // 为了性能考虑，仅仅截取一小块屏幕
-                    //Bitmap s = CaptureRegionDirect3D(winHandle, new Rectangle(285, 318, 230, 190));
-
-                    //string path = System.IO.Path.Combine(Environment.CurrentDirectory) + selected_lvi.Pid.ToString() + ".jpg";
-
-                    /*int width = s.Width;
-                    int height = s.Height;
-                    int[] arr = new int[225];
-                    Color p;
-
-                    //Grayscale
-                    for (int y = 0; y < height; y++)
-                    {
-                        for (int x = 0; x < width; x++)
-                        {
-                            p = s.GetPixel(x, y);
-                            int a = p.A;
-                            int r = p.R;
-                            int g = p.G;
-                            int b = p.B;
-                            int avg = (r + g + b) / 3;
-                            avg = avg > 90 ? 0 : 255;     // Converting gray pixels to either pure black or pure white
-                            s.SetPixel(x, y, Color.FromArgb(a, avg, avg, avg));
-                        }
-                    }*/
-
-                    /*TesseractEngine ocr;
-                    ocr = new TesseractEngine(System.IO.Path.Combine(Environment.CurrentDirectory, @"tessdata"), "chi_sim");//设置语言   中文
-                    //bit = PreprocesImage(bit);//进行图像处理,如果识别率低可试试
-                    Tesseract.Page page = ocr.Process(s, PageSegMode.SingleBlockVertText);
-                    string str = page.GetText();//识别后的内容
-                    page.Dispose();
-                    //System.Windows.MessageBox.Show(str);
-                    Console.WriteLine(str);*/
-
-                    string bitmapPath = System.IO.Path.Combine(Environment.CurrentDirectory) + "\\sample.png";
-                    var bitmap = new Bitmap(bitmapPath);
-
-                    System.Drawing.Point p = new System.Drawing.Point(s.Width, s.Height);
-
-                    List<System.Drawing.Point> pl = FindPicture(bitmap, s, 50);
-
-                    if (pl.Count() > 0)
-                    {
-                        Console.WriteLine("==================yes!!!=================");
-                    }
-
-                    foreach (var item in pl)
-                    {
-                        Console.WriteLine("==================POINT=================" + item.X + "===" + item.Y);
-                    }
-
-                    //s.Save(path);
-                    break;
-                }
-            }
         }
 
         private static SlimDX.Direct3D9.Direct3D _direct3D9 = new SlimDX.Direct3D9.Direct3D();

@@ -14,23 +14,6 @@
             <ColumnDefinition Width="Auto" MinWidth="152"/>
             <ColumnDefinition Width="187*"/>
         </Grid.ColumnDefinitions>
-        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="109" Margin="10,22,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="前置游戏窗口" Click="SetWindowFrontend_Click" />
-                    <MenuItem Header="取消防掉线" Click="CancelAfkMenuOption_Click" />
-                    <!--<MenuItem Header="截屏" Click="ScreenshotMenuOption_Click" />-->
-                </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.View>
-                <GridView x:Name="GameItemsGridView">
-                    <GridViewColumn Header="序号"  Width="50" DisplayMemberBinding="{Binding Id}"/>
-                    <GridViewColumn Header="窗口"  Width="140" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="状态"  Width="165" DisplayMemberBinding="{Binding Status}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,-7,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259" Height="25"/>
         <Label x:Name="ExpireDateTime" Content="N/A" HorizontalAlignment="Right" Margin="0,453,92,0" VerticalAlignment="Top" Width="204" Grid.ColumnSpan="2" Grid.Column="1" Height="25"/>
         <Button Content="激活" HorizontalAlignment="Left" Margin="121,456,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" Height="19" />
         <Label Content="2020.03.03 更新" HorizontalAlignment="Right" Margin="0,481,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" Height="23" />
@@ -71,11 +54,20 @@
         <Label Content="掉线自动登录：" HorizontalAlignment="Left" Margin="9,261,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
         <CheckBox x:Name="AutoReloginCheckbox" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="48,266,0,0" VerticalAlignment="Top" Height="15" Width="104"/>
         <CheckBox x:Name="AutoAppNotificationCheckbox" Content="手机App" Grid.Column="1" HorizontalAlignment="Left" Margin="143,221,0,0" VerticalAlignment="Top" Height="15" Width="80" IsEnabled="False" Grid.ColumnSpan="2"/>
-        <GroupBox Grid.ColumnSpan="3" Header="自动聊天助手" HorizontalAlignment="Left" Height="154" Margin="9,294,0,0" VerticalAlignment="Top" Width="371" Panel.ZIndex="-1">
-            <TextBox x:Name="TalkConentTextBox" HorizontalAlignment="Left" Height="64" Margin="92,62,0,0" TextWrapping="Wrap" Text="在此手动指定内容..." VerticalAlignment="Top" Width="234"/>
+        <GroupBox Grid.ColumnSpan="3" Header="自动聊天助手" HorizontalAlignment="Left" Height="154" Margin="9,294,0,0" VerticalAlignment="Top" Width="363" Panel.ZIndex="-1">
+            <TextBox x:Name="TalkConentTextBox" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     HorizontalAlignment="Left" Height="64" Margin="92,62,0,0" TextWrapping="Wrap" Text="在此手动指定内容..." VerticalAlignment="Top" Width="234"/>
         </GroupBox>
         <Label Content="发送内容：" HorizontalAlignment="Left" Margin="33,341,0,0" VerticalAlignment="Top" Height="25" Width="69" Grid.ColumnSpan="2" />
         <CheckBox x:Name="RandomTalkContentCheckbox_Robot" Content="多愁善感冷酷无情的机器人思想家哲学家" HorizontalAlignment="Left" Margin="49,347,0,0" VerticalAlignment="Top" Height="15" Width="245" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="或者" HorizontalAlignment="Left" Margin="0,389,0,0" VerticalAlignment="Top" Height="25" Width="35" Grid.Column="1" />
+        <TextBox x:Name="LogConentTextBox" 
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            HorizontalAlignment="Left" Height="107" Margin="11,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Grid.ColumnSpan="3" IsReadOnly = "True" BorderThickness="0"/>
+        <GroupBox Grid.ColumnSpan="3" Header="日志消息" HorizontalAlignment="Left" Height="135" Margin="9,-2,0,0" VerticalAlignment="Top" Width="363" Panel.ZIndex="-1">
+        </GroupBox>
     </Grid>
 </Window>
