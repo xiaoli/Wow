@@ -33,11 +33,7 @@ namespace AntiAFK
 
         private const int W_WIDTH = 800;
         private const int W_HEIGHT = 600;
-
-        private static List<IntPtr> mWindows = new List<IntPtr>();
-
-        // 微信窗口
-        private static IntPtr mWeChatWindow = IntPtr.Zero;
+        
         // 战网窗口
         private static IntPtr mBattleNetWindow = IntPtr.Zero;
         // 魔兽窗口
@@ -181,9 +177,8 @@ namespace AntiAFK
             }
             catch
             {
-                //Console.WriteLine("Some errors ...");
+                LoggingIt("出现异常了...");
             }
-            
         }
 
         [VMProtect.Begin]
@@ -416,7 +411,6 @@ namespace AntiAFK
             {
                 if (IsWindow(mWowWindow)) // 如果是一个有效的窗口Handle
                 {
-                    LoggingIt("AntiAFKTimerFunc");
                     await AvoidOffline(mWowWindow);
                     UpdateInterval();
                 }
@@ -434,7 +428,7 @@ namespace AntiAFK
             {
                 foreach (Process pList in Process.GetProcesses())
                 {
-                    if (IsWindow(mWowWindow) || IsWindow(mBattleNetWindow)) // 如果都获取到了，就停止for循环
+                    if (IsWindow(mWowWindow) && IsWindow(mBattleNetWindow)) // 如果都获取到了，就停止for循环
                     {
                         break;
                     }
@@ -450,8 +444,12 @@ namespace AntiAFK
                         mWowWindow = pList.MainWindowHandle;
                         LoggingIt("获取到游戏客户端");
 
+                        await Task.Delay(200);
+
                         // 设置指定窗口大小
                         SetWindowPos(mWowWindow, 0, 0, 0, W_WIDTH, W_HEIGHT, 0x46);
+
+                        await Task.Delay(200);
                     }
                 }
             }
@@ -553,6 +551,10 @@ namespace AntiAFK
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Shutdown the application.
+            System.Windows.Application.Current.Shutdown();
+            // OR You can Also go for below logic
+            // Environment.Exit(0);
         }
 
         private void Window_Closed(object sender, EventArgs e)
