@@ -8,15 +8,11 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Collections.ObjectModel;
 using System.Windows.Threading;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.IO;
 using VMProtect;
 using System.Net;
 using Newtonsoft.Json.Linq;
-using Tesseract;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Notifications.Wpf;
@@ -143,6 +139,7 @@ namespace AntiAFK
         {
             string c = string.Format("{0} {1}{2}", DateTime.Now.ToString(), s, Environment.NewLine);
             LogConentTextBox.AppendText(c);
+            
         }
 
         private Bitmap BitmapImage2Bitmap(System.Windows.Media.Imaging.BitmapImage bitmapImage)
@@ -185,7 +182,17 @@ namespace AntiAFK
                 if (pl.Count() > 0)
                 {
                     string c = "我尊贵的主人，游戏账号掉线啦！";
-                    LoggingIt(c);
+                    LoggingIt(c); // TODO: 此处添加红色颜色文字
+
+                    if (AutoDesktopNotificationCheckbox.IsChecked == true)
+                    {
+                        mNotificationManager.Show(new NotificationContent
+                        {
+                            Title = "魔兽世界怀旧服",
+                            Message = c,
+                            Type = NotificationType.Error
+                        });
+                    }
 
                     /*if (AutoWechatCheckbox.IsChecked == true && mWeChatWindow != IntPtr.Zero && IsWindow(mWeChatWindow))
                     {
@@ -200,26 +207,21 @@ namespace AntiAFK
 
                     if (AutoReloginCheckbox.IsChecked == true && mBattleNetWindow != IntPtr.Zero && IsWindow(mBattleNetWindow))
                     {
-                        LoggingIt("正在自动重新登录游戏中...");
+                        LoggingIt("正在重新登录游戏中...");
 
                         SendMessage(winHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 
                         await Task.Delay(1000);
-                        SetForegroundWindow(mBattleNetWindow);
+                        Keyboard.Messaging.SendEnterKey(mBattleNetWindow); // 回车键，直接从战网启动新游戏客户端
                         await Task.Delay(1000);
 
-                        SendKeys.SendWait("{Enter}");
-                        SendKeys.Flush();
-                    }
-                    
-                    if (AutoDesktopNotificationCheckbox.IsChecked == true)
-                    {
-                        mNotificationManager.Show(new NotificationContent
+                        // 如果，此时游戏窗口已经重新打开，则按回车选择角色，进入游戏
+                        await Task.Delay(20000);
+                        if (IsWindow(mWowWindow))
                         {
-                            Title = "魔兽世界怀旧服",
-                            Message = c,
-                            Type = NotificationType.Warning
-                        });
+                            Keyboard.Messaging.SendEnterKey(mWowWindow);
+                            LoggingIt("选择角色，重新进入游戏中...");
+                        }
                     }
                 }
             }
@@ -478,11 +480,17 @@ namespace AntiAFK
             {
                 foreach (Process pList in Process.GetProcesses())
                 {
-                    if (pList.MainWindowTitle.Contains("暴雪战网"))
+                    if (IsWindow(mWowWindow) || IsWindow(mBattleNetWindow)) // 如果都获取到了，就停止for循环
+                    {
+                        break;
+                    }
+
+                    if (pList.MainWindowTitle.Contains("暴雪战网") && !IsWindow(mBattleNetWindow)) // 防止重复获取
                     {
                         mBattleNetWindow = pList.MainWindowHandle;
                         LoggingIt("获取到战网客户端");
                     }
+
                     if (pList.MainWindowTitle.Contains("魔兽世界") && !IsWindow(mWowWindow)) // 防止多个窗口，赋值覆盖
                     {
                         mWowWindow = pList.MainWindowHandle;

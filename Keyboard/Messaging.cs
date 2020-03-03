@@ -609,6 +609,11 @@ namespace Keyboard
             PostMessage(hWnd, new Key(key));
         }
 
+        public static void SendEnterKey(IntPtr hWnd)
+        {
+            PostMessage(hWnd, new Key(VKeys.KEY_RETURN));
+        }
+
         public static void SendChatTextPost(IntPtr hWnd, string msg)
 		{
 			PostMessage(hWnd, new Key(VKeys.KEY_RETURN));
