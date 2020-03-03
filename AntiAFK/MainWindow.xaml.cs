@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using Tesseract;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Notifications.Wpf;
 
 namespace AntiAFK
 {
@@ -140,6 +141,8 @@ namespace AntiAFK
         DispatcherTimer mUITimer = new DispatcherTimer();
         DispatcherTimer mAFKTimer = new DispatcherTimer();
         DispatcherTimer mDetectorTimer = new DispatcherTimer();
+
+        NotificationManager mNotificationManager;
 
         private static bool ControlAltPressed
         {
@@ -270,9 +273,8 @@ namespace AntiAFK
 
                 if (pl.Count() > 0)
                 {
-                    if (AutoWechatCheckbox.IsChecked == true && mWeChatWindow != IntPtr.Zero && IsWindow(mWeChatWindow))
+                    /*if (AutoWechatCheckbox.IsChecked == true && mWeChatWindow != IntPtr.Zero && IsWindow(mWeChatWindow))
                     {
-                        //Console.WriteLine("==================yes!!!掉下来了=================");
                         await Task.Delay(1000);
                         SetForegroundWindow(mWeChatWindow);
                         await Task.Delay(1000);
@@ -280,7 +282,7 @@ namespace AntiAFK
                         SendKeys.SendWait(DateTime.Now.ToString() + " " + "我的魔兽游戏掉线了!");
                         SendKeys.SendWait("{Enter}");
                         SendKeys.Flush();
-                    }
+                    }*/
 
                     if (AutoReloginCheckbox.IsChecked == true && mBattleNetWindow != IntPtr.Zero && IsWindow(mBattleNetWindow))
                     {
@@ -290,6 +292,16 @@ namespace AntiAFK
 
                         SendKeys.SendWait("{Enter}");
                         SendKeys.Flush();
+                    }
+
+                    if (AutoDesktopNotificationCheckbox.IsChecked == true)
+                    {
+                        mNotificationManager.Show(new NotificationContent
+                        {
+                            Title = "魔兽世界怀旧服",
+                            Message = "我尊贵的主人，游戏账号掉线啦！",
+                            Type = NotificationType.Warning
+                        });
                     }
                 }
             }
@@ -361,7 +373,12 @@ namespace AntiAFK
                     if (RandomTalkCheckbox_Normal.IsChecked == true || RandomTalkCheckbox_Shout.IsChecked == true || RandomTalkCheckbox_Group.IsChecked == true || RandomTalkCheckbox_Team.IsChecked == true)
                     {
                         await Task.Delay(20000); // 推迟20秒执行
-                        string s = GetTalk();
+
+                        string s = TalkConentTextBox.Text;
+                        if (RandomTalkContentCheckbox_Robot.IsChecked == true)
+                        {
+                            s = GetTalk();
+                        }
 
                         if (RandomTalkCheckbox_Normal.IsChecked == true)
                         {
@@ -583,33 +600,31 @@ namespace AntiAFK
         async void DetectorTimerFunc(object sender, EventArgs e)
         {
             // 如果掉线微信提醒或者掉线自动重登被勾选
-            if (AutoWechatCheckbox.IsChecked == true || AutoReloginCheckbox.IsChecked == true)
+            if (AutoReloginCheckbox.IsChecked == true)
             {
-                if ((AutoWechatCheckbox.IsChecked == true && (mWeChatWindow == IntPtr.Zero || IsWindow(mWeChatWindow)))
-                        || (AutoReloginCheckbox.IsChecked == true && (mBattleNetWindow == IntPtr.Zero || IsWindow(mBattleNetWindow))))
+                if ((AutoReloginCheckbox.IsChecked == true && (mBattleNetWindow == IntPtr.Zero || IsWindow(mBattleNetWindow))))
                 {
                     foreach (Process pList in Process.GetProcesses())
                     {
-                        if (pList.MainWindowTitle.Contains("微信"))
+                        /*if (pList.MainWindowTitle.Contains("微信"))
                         {
                             mWeChatWindow = pList.MainWindowHandle;
-                        }
+                        }*/
                         if (pList.MainWindowTitle.Contains("暴雪战网"))
                         {
                             mBattleNetWindow = pList.MainWindowHandle;
                         }
                     }
                 }
-
-                if (mWindows.Any())
+            }
+            if (mWindows.Any())
+            {
+                for (int i = 0; i < mWindows.Count(); i++)
                 {
-                    for (int i = 0; i < mWindows.Count(); i++)
+                    IntPtr winHandle = mWindows[i];
+                    if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
                     {
-                        IntPtr winHandle = mWindows[i];
-                        if (IsWindow(winHandle)) // 如果是一个有效的窗口Handle
-                        {
-                            await DetectDropLineImage(winHandle);
-                        }
+                        await DetectDropLineImage(winHandle);
                     }
                 }
             }
@@ -720,6 +735,8 @@ namespace AntiAFK
             mDetectorTimer.Start();
 
             DataContext = mWowWindowList;
+
+            mNotificationManager = new NotificationManager();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

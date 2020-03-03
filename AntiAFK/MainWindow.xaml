@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Closing="Window_Closing" Closed="Window_Closed"
-        Title="魔兽怀旧服防掉线 V0.08" Height="419" Width="399">
-    <Grid Width="396" Height="400" Margin="0,10,-3,-20">
+        Title="魔兽怀旧服防掉线 V0.08" Height="550" Width="399">
+    <Grid Width="396" Height="531" Margin="0,10,-3,-20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="57*"/>
             <ColumnDefinition Width="Auto" MinWidth="152"/>
             <ColumnDefinition Width="187*"/>
         </Grid.ColumnDefinitions>
-        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="109" Margin="10,30,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
+        <ListView x:Name="GameListView" SelectionMode="Single" ItemsSource="{Binding}" Height="109" Margin="10,22,20,0" VerticalAlignment="Top" Grid.ColumnSpan="3">
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="前置游戏窗口" Click="SetWindowFrontend_Click" />
@@ -30,12 +30,12 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,1,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259" Height="25"/>
-        <Label x:Name="ExpireDateTime" Content="N/A" HorizontalAlignment="Right" Margin="0,316,92,0" VerticalAlignment="Top" Width="204" Grid.ColumnSpan="2" Grid.Column="1" Height="25"/>
-        <Button Content="激活" HorizontalAlignment="Left" Margin="121,319,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" Height="19" />
-        <Label Content="2020.02.29 更新" HorizontalAlignment="Right" Margin="0,348,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" Height="23" />
-        <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,172,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="49,173,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged" Height="21">
+        <Label Content="使用说明：对游戏窗口按键 Ctrl+Alt+9 即可。" HorizontalAlignment="Left" Margin="5,-7,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="259" Height="25"/>
+        <Label x:Name="ExpireDateTime" Content="N/A" HorizontalAlignment="Right" Margin="0,453,92,0" VerticalAlignment="Top" Width="204" Grid.ColumnSpan="2" Grid.Column="1" Height="25"/>
+        <Button Content="激活" HorizontalAlignment="Left" Margin="121,456,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" Height="19" />
+        <Label Content="2020.03.03 更新" HorizontalAlignment="Right" Margin="0,481,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" Height="23" />
+        <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,164,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
+        <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="49,165,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged" Height="21">
             <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
             <ComboBoxItem Content="3" HorizontalAlignment="Left" Width="80" />
             <ComboBoxItem Content="4" HorizontalAlignment="Left" Width="80" />
@@ -49,27 +49,33 @@
             <ComboBoxItem Content="随机5-10" HorizontalAlignment="Left" Width="80" />
             <ComboBoxItem Content="随机2-10" HorizontalAlignment="Left" Width="80" />
         </ComboBox>
-        <Label Content="分钟" HorizontalAlignment="Left" Margin="131,171,0,0" VerticalAlignment="Top" Grid.Column="1" Height="25" Width="34" Grid.ColumnSpan="2" />
+        <Label Content="分钟" HorizontalAlignment="Left" Margin="131,163,0,0" VerticalAlignment="Top" Grid.Column="1" Height="25" Width="34" Grid.ColumnSpan="2" />
 
         <TextBox x:Name="InstallPathTextBox" Padding="5 0 0 0" VerticalContentAlignment="Center" BorderThickness="1" Opacity="1" IsReadOnly="True" Foreground="White" Grid.ColumnSpan="2" Margin="34,239,75,133" Grid.Column="1" Visibility="Hidden"/>
         <Button Content="浏览" Margin="125,239,24,133" BorderThickness="0" Grid.Column="2" Visibility="Hidden" />
         <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" Height="25" Width="82" />
-        <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,197,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将在小退后自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,202,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="212"/>
-        <Label Content="自动聊天选项：" HorizontalAlignment="Left" Margin="9,221,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="48,226,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="104,226,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Team" Content="队伍" Grid.Column="2" HorizontalAlignment="Left" Margin="10,226,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="66,226,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <Label Content="是否自动小退：" HorizontalAlignment="Left" Margin="9,146,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoExitReturnCheckbox" Content="（打勾则将自动小退并进入游戏防暂离）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,151,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="236"/>
-        <Label Content="掉线手机报警：" HorizontalAlignment="Left" Margin="9,246,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoWechatCheckbox" Content="微信" Grid.Column="1" HorizontalAlignment="Left" Margin="48,251,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <Label Content="有效期：" HorizontalAlignment="Left" Margin="10,316,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="58" />
-        <CheckBox x:Name="AutoSMSCheckbox" Content="短信" Grid.Column="1" HorizontalAlignment="Left" Margin="104,251,0,0" VerticalAlignment="Top" Height="15" Width="44" IsEnabled="False"/>
-        <CheckBox x:Name="AutoPhoneCheckbox" Content="手机" Grid.Column="2" HorizontalAlignment="Left" Margin="10,251,0,0" VerticalAlignment="Top" Height="29" Width="44" IsEnabled="False"/>
-        <Label Content="掉线自动登录：" HorizontalAlignment="Left" Margin="9,291,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoReloginCheckbox" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="48,296,0,0" VerticalAlignment="Top" Height="15" Width="104"/>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="105,274,0,0" TextWrapping="Wrap" Text="手机号码" VerticalAlignment="Top" Width="101" Grid.ColumnSpan="2" IsEnabled="False"/>
+        <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,189,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
+        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将在小退后自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,194,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="212"/>
+        <Label Content="发送频道：" HorizontalAlignment="Left" Margin="33,315,0,0" VerticalAlignment="Top" Height="25" Width="69" Grid.ColumnSpan="2" />
+        <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="49,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="105,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Team" Content="队伍" Grid.Column="2" HorizontalAlignment="Left" Margin="11,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="69,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <Label Content="是否自动小退：" HorizontalAlignment="Left" Margin="9,138,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
+        <CheckBox x:Name="AutoExitReturnCheckbox" Content="（打勾则将自动小退并进入游戏防暂离）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,143,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="236"/>
+        <Label Content="掉线手机报警：" HorizontalAlignment="Left" Margin="9,216,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
+        <CheckBox x:Name="AutoDesktopNotificationCheckbox" Content="电脑桌面" Grid.Column="1" HorizontalAlignment="Left" Margin="48,221,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
+        <Label Content="有效期：" HorizontalAlignment="Left" Margin="10,453,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="58" />
+        <CheckBox x:Name="AutoSMSCheckbox" Content="SMS短消息" Grid.Column="1" HorizontalAlignment="Left" Margin="48,245,0,0" VerticalAlignment="Top" Height="15" Width="90" IsEnabled="False"/>
+        <CheckBox x:Name="AutoPhoneCheckbox" Content="电话语音" Grid.Column="1" HorizontalAlignment="Left" Margin="143,245,0,0" VerticalAlignment="Top" Height="15" Width="73" IsEnabled="False" Grid.ColumnSpan="2"/>
+        <Label Content="掉线自动登录：" HorizontalAlignment="Left" Margin="9,261,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
+        <CheckBox x:Name="AutoReloginCheckbox" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="48,266,0,0" VerticalAlignment="Top" Height="15" Width="104"/>
+        <CheckBox x:Name="AutoAppNotificationCheckbox" Content="手机App" Grid.Column="1" HorizontalAlignment="Left" Margin="143,221,0,0" VerticalAlignment="Top" Height="15" Width="80" IsEnabled="False" Grid.ColumnSpan="2"/>
+        <GroupBox Grid.ColumnSpan="3" Header="自动聊天助手" HorizontalAlignment="Left" Height="154" Margin="9,294,0,0" VerticalAlignment="Top" Width="371" Panel.ZIndex="-1">
+            <TextBox x:Name="TalkConentTextBox" HorizontalAlignment="Left" Height="64" Margin="92,62,0,0" TextWrapping="Wrap" Text="在此手动指定内容..." VerticalAlignment="Top" Width="234"/>
+        </GroupBox>
+        <Label Content="发送内容：" HorizontalAlignment="Left" Margin="33,341,0,0" VerticalAlignment="Top" Height="25" Width="69" Grid.ColumnSpan="2" />
+        <CheckBox x:Name="RandomTalkContentCheckbox_Robot" Content="多愁善感冷酷无情的机器人思想家哲学家" HorizontalAlignment="Left" Margin="49,347,0,0" VerticalAlignment="Top" Height="15" Width="245" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <Label Content="或者" HorizontalAlignment="Left" Margin="0,389,0,0" VerticalAlignment="Top" Height="25" Width="35" Grid.Column="1" />
     </Grid>
 </Window>
