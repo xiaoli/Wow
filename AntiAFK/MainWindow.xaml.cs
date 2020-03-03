@@ -497,9 +497,6 @@ namespace AntiAFK
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
-        [DllImport("user32.dll")]
-        public static extern Int32 SetForegroundWindow(int hWnd);
-
         [DllImport("user32")]
         private static extern int SetWindowPos(IntPtr hwnd, int hWndInsertAfter, int x, int y, int w, int h, int flag);
 
@@ -551,6 +548,9 @@ namespace AntiAFK
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // 先保存个人设置
+            Properties.Settings.Default.Save();
+
             // Shutdown the application.
             System.Windows.Application.Current.Shutdown();
             // OR You can Also go for below logic

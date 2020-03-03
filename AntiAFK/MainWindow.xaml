@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AntiAFK"
+        xmlns:p="clr-namespace:AntiAFK.Properties"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Closing="Window_Closing" Closed="Window_Closed"
@@ -18,7 +19,10 @@
         <Button Content="激活" HorizontalAlignment="Left" Margin="121,456,0,0" VerticalAlignment="Top" Width="39" Click="Button_Click" Grid.Column="2" Height="19" />
         <Label Content="2020.03.03 更新" HorizontalAlignment="Right" Margin="0,481,14,0" VerticalAlignment="Top" Width="88" FontSize="10" Grid.Column="2" Height="23" />
         <Label Content="小退间隔时间：" HorizontalAlignment="Left" Margin="9,164,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <ComboBox x:Name="LogoutIntervalComboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="49,165,0,0" VerticalAlignment="Top" Width="80" SelectedIndex="10"  SelectionChanged="ComboBox_SelectionChanged" Height="21">
+        <ComboBox x:Name="LogoutIntervalComboBox" SelectedIndex="{Binding LogoutIntervalComboBox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" HorizontalAlignment="Left" Margin="49,165,0,0" VerticalAlignment="Top" Width="80"  SelectionChanged="ComboBox_SelectionChanged" Height="21">
             <ComboBoxItem Content="2" HorizontalAlignment="Left" Width="80" />
             <ComboBoxItem Content="3" HorizontalAlignment="Left" Width="80" />
             <ComboBoxItem Content="4" HorizontalAlignment="Left" Width="80" />
@@ -38,30 +42,60 @@
         <Button Content="浏览" Margin="125,239,24,133" BorderThickness="0" Grid.Column="2" Visibility="Hidden" />
         <Label Content="客户端路径：" HorizontalAlignment="Left" Margin="11,241,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden" Height="25" Width="82" />
         <Label Content="自动切换角色：" HorizontalAlignment="Left" Margin="9,189,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="RandomCharacterCheckbox" Content="（打勾则将在小退后自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,194,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="212"/>
+        <CheckBox x:Name="RandomCharacterCheckbox" IsChecked="{Binding RandomCharacterCheckbox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="（打勾则将在小退后自动切换角色）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,194,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="212"/>
         <Label Content="发送频道：" HorizontalAlignment="Left" Margin="33,315,0,0" VerticalAlignment="Top" Height="25" Width="69" Grid.ColumnSpan="2" />
-        <CheckBox x:Name="RandomTalkCheckbox_Normal" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="49,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Shout" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="105,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Team" Content="队伍" Grid.Column="2" HorizontalAlignment="Left" Margin="11,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
-        <CheckBox x:Name="RandomTalkCheckbox_Group" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="69,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Normal" IsChecked="{Binding RandomTalkCheckbox_Normal, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="说话" Grid.Column="1" HorizontalAlignment="Left" Margin="49,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Shout" IsChecked="{Binding RandomTalkCheckbox_Shout, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="大喊" Grid.Column="1" HorizontalAlignment="Left" Margin="105,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Team" IsChecked="{Binding RandomTalkCheckbox_Team, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="队伍" Grid.Column="2" HorizontalAlignment="Left" Margin="11,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
+        <CheckBox x:Name="RandomTalkCheckbox_Group" IsChecked="{Binding RandomTalkCheckbox_Group, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="公会" Grid.Column="2" HorizontalAlignment="Left" Margin="69,320,0,0" VerticalAlignment="Top" Height="15" Width="44"/>
         <Label Content="是否自动小退：" HorizontalAlignment="Left" Margin="9,138,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoExitReturnCheckbox" Content="（打勾则将自动小退并进入游戏防暂离）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,143,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="236"/>
+        <CheckBox x:Name="AutoExitReturnCheckbox" IsChecked="{Binding AutoExitReturnCheckbox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="（打勾则将自动小退并进入游戏防暂离）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,143,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="15" Width="236"/>
         <Label Content="掉线手机报警：" HorizontalAlignment="Left" Margin="9,216,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoDesktopNotificationCheckbox" Content="电脑桌面" Grid.Column="1" HorizontalAlignment="Left" Margin="48,221,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
+        <CheckBox x:Name="AutoDesktopNotificationCheckbox" IsChecked="{Binding AutoDesktopNotificationCheckbox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="电脑桌面" Grid.Column="1" HorizontalAlignment="Left" Margin="48,221,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
         <Label Content="有效期：" HorizontalAlignment="Left" Margin="10,453,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="58" />
         <CheckBox x:Name="AutoSMSCheckbox" Content="SMS短消息" Grid.Column="1" HorizontalAlignment="Left" Margin="48,245,0,0" VerticalAlignment="Top" Height="15" Width="90" IsEnabled="False"/>
         <CheckBox x:Name="AutoPhoneCheckbox" Content="电话语音" Grid.Column="1" HorizontalAlignment="Left" Margin="143,245,0,0" VerticalAlignment="Top" Height="15" Width="73" IsEnabled="False" Grid.ColumnSpan="2"/>
         <Label Content="掉线自动登录：" HorizontalAlignment="Left" Margin="9,261,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="25" Width="94" />
-        <CheckBox x:Name="AutoReloginCheckbox" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="48,266,0,0" VerticalAlignment="Top" Height="15" Width="104"/>
+        <CheckBox x:Name="AutoReloginCheckbox" IsChecked="{Binding AutoReloginCheckbox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="（需要已登录战网）" Grid.Column="1" HorizontalAlignment="Left" Margin="48,266,0,0" VerticalAlignment="Top" Height="15" Width="128" Grid.ColumnSpan="2"/>
         <CheckBox x:Name="AutoAppNotificationCheckbox" Content="手机App" Grid.Column="1" HorizontalAlignment="Left" Margin="143,221,0,0" VerticalAlignment="Top" Height="15" Width="80" IsEnabled="False" Grid.ColumnSpan="2"/>
         <GroupBox Grid.ColumnSpan="3" Header="自动聊天助手" HorizontalAlignment="Left" Height="154" Margin="9,294,0,0" VerticalAlignment="Top" Width="363" Panel.ZIndex="-1">
             <TextBox x:Name="TalkConentTextBox" 
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     HorizontalAlignment="Left" Height="64" Margin="92,62,0,0" TextWrapping="Wrap" Text="在此手动指定内容..." VerticalAlignment="Top" Width="234"/>
+                     HorizontalAlignment="Left" Height="64" Margin="92,62,0,0" TextWrapping="Wrap" Text="{Binding TalkConentTextBox, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="234"/>
         </GroupBox>
         <Label Content="发送内容：" HorizontalAlignment="Left" Margin="33,341,0,0" VerticalAlignment="Top" Height="25" Width="69" Grid.ColumnSpan="2" />
-        <CheckBox x:Name="RandomTalkContentCheckbox_Robot" Content="多愁善感冷酷无情的机器人思想家哲学家" HorizontalAlignment="Left" Margin="49,347,0,0" VerticalAlignment="Top" Height="15" Width="245" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="RandomTalkContentCheckbox_Robot" IsChecked="{Binding RandomTalkContentCheckbox_Robot, 
+                Mode=TwoWay, 
+                Source={x:Static p:Settings.Default}, 
+                UpdateSourceTrigger=PropertyChanged}" Content="多愁善感冷酷无情的机器人思想家哲学家" HorizontalAlignment="Left" Margin="49,347,0,0" VerticalAlignment="Top" Height="15" Width="245" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="或者" HorizontalAlignment="Left" Margin="0,389,0,0" VerticalAlignment="Top" Height="25" Width="35" Grid.Column="1" />
         <TextBox x:Name="LogConentTextBox" 
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
